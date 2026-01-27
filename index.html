@@ -94,19 +94,15 @@
             // Icon Definitions (SVG Paths)
             const LucideIcons = {
                 Activity: createIcon(["M22 12h-4l-3 9L9 3l-3 9H2"]),
-                AlertCircle: createIcon(["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"]), // Using Shield-like shape for Alert/Safety or Circle
-                // Correcting AlertCircle to actual Circle with !
                 AlertCircle: ({ size=24, color="currentColor", className="" }) => (
                     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
                 ),
                 ArrowDown: createIcon(["M12 5v14", "m19 12-7 7-7-7"]),
                 ArrowRight: createIcon(["M5 12h14", "m12 5 7-7-7-7"]),
                 BarChart3: createIcon(["M3 3v18h18", "M18 17V9", "M13 17V5", "M8 17v-3"]),
-                BriefcaseMedical: createIcon(["M12 11v4", "M14 13h-4", "M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2", "M18 6v14", "M6 6v14", "M6 6h12", "M6 20h12"]), // Simplified
+                BriefcaseMedical: createIcon(["M12 11v4", "M14 13h-4", "M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2", "M18 6v14", "M6 6v14", "M6 6h12", "M6 20h12"]),
                 Building2: createIcon(["M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z", "M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2", "M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2", "M10 6h4", "M10 10h4", "M10 14h4", "M10 18h4"]),
                 Calculator: createIcon(["M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2", "M12 18h.01", "M8 18h.01", "M16 18h.01", "M12 14h.01", "M8 14h.01", "M16 14h.01", "M12 10h.01", "M8 10h.01", "M16 10h.01"]),
-                CalendarClock: createIcon(["M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5", "M16 2v4", "M8 2v4", "M3 10h5", "M21 10h-5.5", "M20 13.5v.5", "M16 17h.01", "M22 22l-5-5"]), // Approximate
-                // Fix CalendarClock to be simpler
                 CalendarClock: ({ size=24, color="currentColor", className="" }) => (
                      <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M20 14h-2"/><path d="M18 14v4"/><path d="M22 22l-2-2"/></svg>
                 ),
@@ -114,13 +110,9 @@
                 ClipboardCheck: createIcon(["M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2", "M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z", "m9 14 2 2 4-4"]),
                 ClipboardList: createIcon(["M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2", "M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z", "M12 11h4", "M12 16h4", "M8 11h.01", "M8 16h.01"]),
                 Coffee: createIcon(["M17 8h1a4 4 0 1 1 0 8h-1", "M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z", "M6 2v2", "M10 2v2", "M14 2v2"]),
-                CreditCard: createIcon(["M2 10h20", "M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2Z"]), // Wallet/Card mix
-                // Better CreditCard
                 CreditCard: ({ size=24, color="currentColor", className="" }) => (
                     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
                 ),
-                FileCheck: createIcon(["M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2Z", "M12 13h5", "m9 15 2 2 4-4"]), // Simplified
-                // Correct FileCheck
                 FileCheck: ({ size=24, color="currentColor", className="" }) => (
                     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2Z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg>
                 ),
@@ -131,8 +123,6 @@
                 LayoutTemplate: createIcon(["M21 3H3v7h18V3z", "M21 14h-9v7h9v-7z", "M8 14H3v7h5v-7z"]),
                 Moon: createIcon(["M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"]),
                 PackageCheck: createIcon(["m16 16 2 2 4-4", "M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14", "M16.5 9.4 7.55 4.24"]),
-                PenTool: createIcon(["m12 19 7-7 3 3-7 7-3-3z", "m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z", "m2 2 7.586 7.586", "Circle at 11 11"]), // Simplified
-                // Better PenTool
                 PenTool: ({ size=24, color="currentColor", className="" }) => (
                     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
                 ),
@@ -143,15 +133,11 @@
                 ScanLine: createIcon(["M3 7V5a2 2 0 0 1 2-2h2", "M17 3h2a2 2 0 0 1 2 2v2", "M21 17v2a2 2 0 0 1-2 2h-2", "M7 21H5a2 2 0 0 1-2-2v-2", "M7 12h10"]),
                 Send: createIcon(["m22 2-7 20-4-9-9-4Z", "M22 2 11 13"]),
                 Shirt: createIcon(["M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23Z"]),
-                Stethoscope: createIcon(["M11 2v2", "M5 2v2", "M5 5h6", "M8 5v14a4 4 0 0 0 8 0v-4h2a2 2 0 0 1 2 2v3", "M18 12a2 2 0 0 1-2 2h-2v-4h4Z"]), // Simplified
-                // Better Stethoscope
                 Stethoscope: ({ size=24, color="currentColor", className="" }) => (
                     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v6a2 2 0 0 0 2 2v0a2 2 0 0 0 2-2v-6"/><path d="M11 3v2"/><path d="M5 3v2"/></svg>
                 ),
                 StopCircle: createIcon(["M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10Z", "M9 9h6v6H9z"]),
                 Thermometer: createIcon(["M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"]),
-                Timer: createIcon(["M10 2h4", "M12 14v-4", "M4 13a8 8 0 0 1 8-7 8 8 0 1 1-8 8", "M18 4 6 18"]), // Mix of Timer/Off
-                // Better Timer
                 Timer: ({ size=24, color="currentColor", className="" }) => (
                     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>
                 ),
@@ -814,6 +800,141 @@
                         </div>
                         )}
 
+                        {/* --- CONTENT: PREPARATION GUIDE (FIXED) --- */}
+                        {activeTab === 'prep' && (
+                        <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="text-center mb-8 pt-4">
+                                <h2 className="text-2xl font-bold text-gray-800">การเตรียมตัวสำหรับอาสาสมัคร</h2>
+                                <p className="text-gray-600">ข้อปฏิบัติก่อนเข้ารับการตรวจสุขภาพ{planType === 'full' && 'และทดสอบสมรรถภาพ'}</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                
+                                <PrepCard 
+                                    icon={Moon}
+                                    title="1. การพักผ่อน"
+                                    items={[
+                                        "ควรนอนหลับพักผ่อนให้เพียงพอ อย่างน้อย 6-8 ชั่วโมง",
+                                        "งดการออกกำลังกายหนัก ก่อนวันตรวจ 1-2 วัน",
+                                        "หลีกเลี่ยงความเครียดหรือวิตกกังวล"
+                                    ]}
+                                    caution="หากพักผ่อนไม่เพียงพอ อาจส่งผลต่อค่าความดันโลหิตและอัตราการเต้นของหัวใจ"
+                                />
+
+                                <PrepCard 
+                                    icon={Coffee}
+                                    title="2. อาหารและเครื่องดื่ม"
+                                    items={[
+                                        "งดเครื่องดื่มแอลกอฮอล์ อย่างน้อย 24 ชั่วโมงก่อนตรวจ",
+                                        "งดชา กาแฟ หรือเครื่องดื่มคาเฟอีนในเช้าวันตรวจ (ผลต่อความดัน)",
+                                        planType === 'full' 
+                                        ? "แนะนำให้ทานอาหารอ่อนๆ ย่อยง่าย ก่อนเวลาทดสอบสมรรถภาพ 2-3 ชม."
+                                        : "สามารถรับประทานอาหารเช้าได้ตามปกติ (ไม่จำเป็นต้องงด)"
+                                    ]}
+                                    caution={planType === 'full' ? "อย่าปล่อยให้ท้องว่างจนเกินไป เพราะต้องใช้พลังงานในการทดสอบ Step Test" : null}
+                                />
+
+                                <PrepCard 
+                                    icon={Shirt}
+                                    title="3. การแต่งกาย"
+                                    items={[
+                                        planType === 'full' 
+                                        ? "สวมเสื้อผ้าที่สวมใส่สบาย ระบายอากาศได้ดี (ชุดกีฬา)" 
+                                        : "สวมเสื้อผ้าที่สะดวกต่อการวัดความดันและตรวจร่างกาย",
+                                        planType === 'full' 
+                                        ? "สวมรองเท้าผ้าใบที่กระชับ เหมาะกับการก้าวขึ้น-ลงบันได" 
+                                        : "สวมรองเท้าที่ถอดง่าย (สำหรับชั่งน้ำหนัก/วัดส่วนสูง)"
+                                    ]}
+                                />
+
+                                <PrepCard 
+                                    icon={Pill}
+                                    title="4. ยาและโรคประจำตัว"
+                                    items={[
+                                        "ผู้ที่มีโรคประจำตัว (เช่น ความดัน, เบาหวาน, หอบหืด) ไม่ต้องนำยามา",
+                                        "รับประทานยาตอนเช้าได้ตามปกติ (ยกเว้นแพทย์สั่งงด)",
+                                        "หากมีอาการเจ็บป่วยเฉียบพลันในวันตรวจ ให้แจ้งเจ้าหน้าที่จุดลงทะเบียนทันที"
+                                    ]}
+                                />
+
+                                <div className="md:col-span-2">
+                                    <PrepCard 
+                                        icon={CreditCard}
+                                        title="5. สิ่งที่ต้องนำมา"
+                                        items={[
+                                        "บัตรประจำตัวประชาชน (ฉบับจริง)",
+                                        "แว่นสายตา (ถ้ามี) สำหรับการกรอกเอกสาร",
+                                        planType === 'full' 
+                                            ? "หน้ากากอนามัย (แนะนำให้สวมใส่ตลอดเวลา ยกเว้นขณะทดสอบ Step Test)"
+                                            : "หน้ากากอนามัย (สวมใส่ตลอดเวลาในพื้นที่ตรวจ)"
+                                        ]}
+                                    />
+                                </div>
+
+                            </div>
+                            
+                            {planType === 'full' && (
+                                <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6 flex flex-col md:flex-row items-center gap-6">
+                                    <div className="bg-blue-100 p-4 rounded-full text-blue-600">
+                                        <Activity size={32} />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-lg font-bold text-blue-800 mb-2">คำแนะนำเพิ่มเติมสำหรับ Chester Step Test</h4>
+                                        <p className="text-sm text-blue-700 leading-relaxed">
+                                        การทดสอบนี้เป็นการวัดความฟิตของหัวใจและปอด จะมีการก้าวขึ้น-ลงกล่องความสูง 25 หรือ 30 ซม. ตามจังหวะเสียงดนตรี หากท่านมีอาการ 
+                                        <span className="font-bold underline mx-1">เจ็บหน้าอก, เวียนศีรษะ, หรือหายใจไม่ทัน</span> 
+                                        ขณะทดสอบ ให้ยกมือแจ้งเจ้าหน้าที่เพื่อหยุดการทดสอบทันที
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* New Prep Infographic Section */}
+                            <div className="bg-white rounded-xl shadow-xl p-6 md:p-10 my-10 border border-gray-200">
+                                <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center justify-center">
+                                    <CheckCircle className="mr-2 text-green-600" /> สรุปการเตรียมตัว 5 ขั้นตอน
+                                </h3>
+                                
+                                <div className="flex flex-col md:flex-row justify-between items-start md:items-start gap-4 md:gap-0 px-2 md:px-8">
+                                    <InfographicStep 
+                                        icon={Moon} 
+                                        title="1. นอนหลับ" 
+                                        subtitle="6-8 ชั่วโมง"
+                                        color="bg-indigo-500"
+                                    />
+                                    <InfographicStep 
+                                        icon={Coffee} 
+                                        title="2. อาหาร/น้ำ" 
+                                        subtitle="งด แอลกอฮอล์/คาเฟอีน"
+                                        color="bg-orange-500"
+                                    />
+                                    <InfographicStep 
+                                        icon={Shirt} 
+                                        title="3. ชุดแต่งกาย" 
+                                        subtitle={planType === 'full' ? "ชุดกีฬา/ผ้าใบ" : "ชุดสบายๆ"}
+                                        color="bg-blue-500"
+                                    />
+                                    <InfographicStep 
+                                        icon={Pill} 
+                                        title="4. ยาประจำตัว" 
+                                        subtitle="ไม่ต้องนำมา"
+                                        color="bg-red-500"
+                                    />
+                                    <InfographicStep 
+                                        icon={CreditCard} 
+                                        title="5. เอกสาร" 
+                                        subtitle="บัตร ปชช. จริง"
+                                        color="bg-teal-600"
+                                        isLast={true}
+                                    />
+                                </div>
+                                <div className="mt-8 text-center text-gray-500 text-sm">
+                                    เตรียมร่างกายให้พร้อม เพื่อผลการตรวจที่แม่นยำและความปลอดภัยของท่าน
+                                </div>
+                            </div>
+                        </div>
+                        )}
+
                         {/* --- CONTENT: CRITERIA --- */}
                         {activeTab === 'criteria' && (
                         <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -1034,6 +1155,119 @@
                                     </div>
                                 </div>
                             </div>
+
+                            </div>
+                        </div>
+                        )}
+
+                        {/* --- CONTENT: STAFF GUIDE --- */}
+                        {activeTab === 'staff' && (
+                        <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-8 mt-4 text-center">
+                                <h2 className="text-2xl font-bold text-red-800 flex justify-center items-center gap-2">
+                                    <HeartPulse /> คู่มือการทดสอบ Chester Step Test
+                                </h2>
+                                <p className="text-red-700 font-medium">สำหรับเจ้าหน้าที่ประจำจุดที่ 4 (เจ้าหน้าที่เท่านั้น)</p>
+                            </div>
+
+                            <div className="space-y-6">
+                                
+                                {/* Equipment Checklist for Staff */}
+                                <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-yellow-500">
+                                    <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                        <ClipboardCheck className="mr-2 text-yellow-600" /> ตรวจสอบอุปกรณ์ประจำตัวเจ้าหน้าที่
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <label className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                        <input type="checkbox" className="w-5 h-5 text-yellow-600 rounded" />
+                                        <span className="text-gray-700 font-medium">ใบบันทึกผล (Record Sheet)</span>
+                                        </label>
+                                        <label className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                        <input type="checkbox" className="w-5 h-5 text-yellow-600 rounded" />
+                                        <span className="text-gray-700 font-medium">ชาร์ตแข็ง / คลิปบอร์ด (สำคัญ)</span>
+                                        </label>
+                                        <label className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                        <input type="checkbox" className="w-5 h-5 text-yellow-600 rounded" />
+                                        <span className="text-gray-700 font-medium">ไม้บรรทัด (สำหรับลากเส้นกราฟ)</span>
+                                        </label>
+                                        <label className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                        <input type="checkbox" className="w-5 h-5 text-yellow-600 rounded" />
+                                        <span className="text-gray-700 font-medium">ปากกาลูกลื่น (ควรมี 2 สีถ้าทำได้)</span>
+                                        </label>
+                                        <label className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                        <input type="checkbox" className="w-5 h-5 text-yellow-600 rounded" />
+                                        <span className="text-gray-700 font-medium">นาฬิกาจับเวลา / เครื่องวัดออกซิเจน</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                {/* Stop Criteria */}
+                                <div className="bg-red-50 p-6 rounded-xl border border-red-200">
+                                    <h3 className="text-lg font-bold text-red-800 mb-4 flex items-center">
+                                        <StopCircle className="mr-2" /> เกณฑ์การยุติการทดสอบทันที
+                                    </h3>
+                                    <ul className="space-y-2 text-red-700 list-disc list-inside">
+                                        <li><strong>ชีพจรสูงสุด (Max HR):</strong> ถึง 80% ของ (220 - อายุ)</li>
+                                        <li><strong>ความเหนื่อย (RPE):</strong> ระดับ <strong>14 ขึ้นไป</strong> (จากสเกล 6-20)</li>
+                                        <li><strong>อาการทางกาย:</strong> หอบเหนื่อยรุนแรง, หน้าซีด, เซ, ทรงตัวไม่อยู่, เจ็บหน้าอก</li>
+                                        <li><strong>ก้าวไม่ทัน:</strong> ไม่สามารถก้าวตามจังหวะเสียงได้</li>
+                                    </ul>
+                                </div>
+
+                                {/* Post Test Action */}
+                                <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500">
+                                    <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                        <BarChart3 className="mr-2 text-green-600" /> การสรุปผลหลังทดสอบ
+                                    </h3>
+                                    <ol className="list-decimal list-inside space-y-3 text-gray-700">
+                                        <li>ให้ผู้ทดสอบเดินผ่อนคลาย (Cool down) ห้ามนั่งทันที</li>
+                                        <li>นำค่า ชีพจร (Heart Rate) ที่วัดได้ในแต่ละขั้น มาจุดลงในกราฟ</li>
+                                        <li>ใช้ <strong>ไม้บรรทัด</strong> ลากเส้นตรงผ่านจุดเหล่านั้น ไปตัดกับเส้น Max HR</li>
+                                        <li>อ่านค่า <strong>Aerobic Capacity (VO2Max)</strong> ที่จุดตัดแนวนอน</li>
+                                        <li>บันทึกผลลงในช่องสรุป และลงชื่อเจ้าหน้าที่ผู้ทดสอบ</li>
+                                        <li className="font-bold text-orange-700 bg-orange-50 p-2 rounded">ส่งคืนเอกสารให้อาสาสมัคร เพื่อนำกลับไปพบแพทย์ที่จุดที่ 3</li>
+                                    </ol>
+                                </div>
+
+                                {/* NEW: Staff Workflow Infographic */}
+                                <div className="bg-white rounded-xl shadow-xl p-6 md:p-10 my-10 border border-gray-200">
+                                    <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center justify-center">
+                                        <Activity className="mr-2 text-red-600" /> ขั้นตอนการปฏิบัติงานเจ้าหน้าที่
+                                    </h3>
+                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-start gap-4 md:gap-0 px-2 md:px-8">
+                                        <InfographicStep 
+                                            icon={ClipboardCheck} 
+                                            title="1. เตรียมพร้อม" 
+                                            subtitle="เช็คอุปกรณ์ & ปลอดภัย"
+                                            color="bg-yellow-500"
+                                        />
+                                        <InfographicStep 
+                                            icon={PlayCircle} 
+                                            title="2. เริ่มทดสอบ" 
+                                            subtitle="จับเวลา & ให้จังหวะ"
+                                            color="bg-blue-500"
+                                        />
+                                        <InfographicStep 
+                                            icon={StopCircle} 
+                                            title="3. เฝ้าระวัง" 
+                                            subtitle="สังเกตอาการ/ชีพจร"
+                                            color="bg-red-500"
+                                        />
+                                        <InfographicStep 
+                                            icon={BarChart3} 
+                                            title="4. ประมวลผล" 
+                                            subtitle="วาดกราฟ & สรุป"
+                                            color="bg-green-500"
+                                        />
+                                        <InfographicStep 
+                                            icon={Send} 
+                                            title="5. ส่งต่อ" 
+                                            subtitle="คืนเอกสารกลับไปจุดที่ 3"
+                                            color="bg-purple-600"
+                                            isLast={true}
+                                        />
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
