@@ -3,912 +3,1056 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แผนตรวจสุขภาพอาสาดับไฟป่า 2569 (ระบบออนไลน์)</title>
+    <title>แผนตรวจสุขภาพอาสาดับไฟป่า 2569</title>
     
-    <!-- Tailwind CSS -->
+    <!-- React & ReactDOM (Core Libraries) -->
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Import Map -->
-    <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@18.2.0",
-        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react"
-      }
-    }
-    </script>
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Babel -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f8fafc; }
+        .loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+        }
+        .error-box {
+            display: none; margin: 20px; padding: 20px;
+            background: #fee2e2; border: 1px solid #ef4444;
+            color: #b91c1c; border-radius: 8px; font-family: monospace;
+            max-width: 600px; margin: 40px auto;
+        }
+    </style>
 </head>
-<body class="bg-slate-50">
-    <!-- Loading State -->
-    <div id="root">
-        <div class="flex items-center justify-center min-h-screen text-gray-500">
-            <div class="text-center">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
-                <p>กำลังโหลดระบบ Paperless Health Check...</p>
-            </div>
-        </div>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading" class="loading-screen">
+        <div style="font-size: 24px; font-weight: bold; color: #ea580c;">กำลังโหลดระบบ...</div>
+        <div style="margin-top: 10px; color: #666;">กรุณารอสักครู่ (ต้องใช้อินเทอร์เน็ต)</div>
     </div>
 
-    <!-- Main Script -->
-    <script type="text/babel" data-type="module" data-presets="react">
-        import React, { useState } from 'react';
-        import { createRoot } from 'react-dom/client';
-        import { ClipboardList, Activity, Thermometer, FileText, CheckCircle, Calculator, HeartPulse, Stethoscope, ScanLine, UserPlus, PenTool, ArrowRight, ArrowDown, Users, FileCheck, Info, AlertCircle, Shirt, Moon, Coffee, CreditCard, Pill, Timer, StopCircle, BarChart3, ClipboardCheck, RotateCcw, Building2, BriefcaseMedical, CalendarClock, PackageCheck, FileSearch, Scale, Weight, PlayCircle, Send, LayoutTemplate, Wifi, Tablet, Smartphone, Database, QrCode } from 'lucide-react';
+    <!-- Error Display -->
+    <div id="error-display" class="error-box"></div>
 
-        function WildfireHealthCheckPlan() {
-          const [activeTab, setActiveTab] = useState('plan'); 
-          const [planType, setPlanType] = useState('full'); 
-          const [volunteerCount, setVolunteerCount] = useState(392);
-          
-          const bpMonitorCount = 4;
-          const bpMonitorBackup = 2;
+    <!-- App Root -->
+    <div id="root"></div>
 
-          // --- Components ---
-          const StationCard = ({ number, title, personnel, description, equipment, color, icon: Icon, note }) => (
-            <div className={`bg-white rounded-xl shadow-md overflow-hidden border-t-4 ${color} mb-6`}>
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className={`p-3 rounded-full bg-gray-50 ${color.replace('border-', 'text-')}`}>
-                      <Icon size={24} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-800">จุดที่ {number}: {title}</h3>
-                      <p className="text-sm text-gray-600 font-medium">{personnel}</p>
-                    </div>
-                  </div>
-                  <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold border border-gray-200">
-                    Station {number}
-                  </span>
-                </div>
-                
-                <div className="mb-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                  <h4 className="font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">ขั้นตอน/เงื่อนไข (Digital Flow):</h4>
-                  <div className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{description}</div>
-                  {note && <div className="mt-3 text-xs text-orange-600 bg-orange-50 p-2 rounded border border-orange-100"><strong>หมายเหตุ:</strong> {note}</div>}
-                </div>
+    <!-- Error Handling Script -->
+    <script>
+        window.onerror = function(msg, url, line, col, error) {
+            document.getElementById('loading').style.display = 'none';
+            const errorBox = document.getElementById('error-display');
+            errorBox.style.display = 'block';
+            errorBox.innerHTML = `
+                <h3 style="font-weight:bold; font-size:1.2em;">เกิดข้อผิดพลาด (Error)</h3>
+                <p>${msg}</p>
+                <p style="font-size:0.9em; color:#666;">ที่บรรทัด: ${line}</p>
+                <hr style="border-color:#fca5a5; margin:10px 0;">
+                <strong>วิธีแก้ไข:</strong><br>
+                1. ตรวจสอบสัญญาณอินเทอร์เน็ต (จำเป็นต้องใช้โหลด React)<br>
+                2. ลองกดรีเฟรช (F5) อีกครั้ง<br>
+                3. หากใช้ Notepad แก้ไข ให้แน่ใจว่าบันทึกเป็น <strong>UTF-8</strong>
+            `;
+            return false;
+        };
+    </script>
 
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide flex items-center">
-                    <Wifi className="w-4 h-4 mr-1" /> Hardware & Network
-                  </h4>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                    {equipment.map((item, index) => (
-                      <li key={index} className="flex items-start text-gray-600 bg-white p-2 rounded border border-gray-100 shadow-sm">
-                        <CheckCircle className={`w-4 h-4 mr-2 mt-0.5 flex-shrink-0 ${color.replace('border-', 'text-')}`} />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          );
+    <script type="text/babel">
+        try {
+            // Check Dependencies (Lucide ไม่ต้องเช็คแล้วเพราะฝังโค้ดไว้ข้างใน)
+            if (!window.React) throw new Error("โหลด React ไม่สำเร็จ (Server อาจมีปัญหา)");
+            if (!window.ReactDOM) throw new Error("โหลด ReactDOM ไม่สำเร็จ");
 
-          const InfographicStep = ({ icon: Icon, title, subtitle, color, isLast, note, docAction, returnAction }) => (
-            <div className="flex flex-col items-center relative z-10 w-full md:w-1/5">
-              <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg mb-4 ${color} transform transition-transform hover:scale-110 relative`}>
-                <Icon size={32} />
-                {returnAction && (
-                  <div className="absolute -bottom-2 -right-2 bg-blue-500 text-white rounded-full p-1 border-2 border-white shadow-sm">
-                    <Wifi size={14} />
-                  </div>
-                )}
-              </div>
-              <div className="text-center bg-white p-3 rounded-lg shadow-sm border border-gray-100 w-full min-h-[110px] flex flex-col items-center">
-                <h4 className="font-bold text-gray-800 text-sm md:text-base">{title}</h4>
-                <p className="text-xs text-gray-500 mt-1">{subtitle}</p>
-                {docAction && (
-                  <div className="mt-2 text-[10px] font-bold px-2 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100 inline-flex items-center">
-                    <Database size={10} className="mr-1" /> {docAction}
-                  </div>
-                )}
-              </div>
-              {note && (
-                <div className="mt-2 text-[10px] text-center text-red-500 font-medium bg-red-50 px-2 py-1 rounded">
-                  {note}
-                </div>
-              )}
-              {!isLast && (
-                <div className="hidden md:block absolute top-8 -right-[50%] w-full h-1 bg-gray-200 -z-10">
-                  <div className="absolute right-0 -top-1.5 text-gray-300">
-                    <ArrowRight size={16} />
-                  </div>
-                </div>
-              )}
-              {!isLast && (
-                <div className="md:hidden my-2 text-gray-300">
-                  <ArrowDown size={24} />
-                </div>
-              )}
-            </div>
-          );
+            const { useState, useEffect } = React;
 
-          const PrepCard = ({ icon: Icon, title, items, caution }) => (
-            <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-3 bg-orange-100 text-orange-600 rounded-full">
-                  <Icon size={24} />
-                </div>
-                <h3 className="text-lg font-bold text-gray-800">{title}</h3>
-              </div>
-              <ul className="space-y-2 mb-4">
-                {items.map((item, idx) => (
-                  <li key={idx} className="flex items-start text-gray-600 text-sm">
-                    <span className="mr-2 text-orange-500">•</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              {caution && (
-                <div className="bg-red-50 text-red-700 text-xs p-3 rounded-lg flex items-start">
-                  <AlertCircle size={14} className="mr-2 mt-0.5 flex-shrink-0" />
-                  {caution}
-                </div>
-              )}
-            </div>
-          );
+            // --- EMBEDDED ICONS (ฝังโค้ดไอคอนเพื่อแก้ปัญหาโหลดไม่สำเร็จ) ---
+            // Helper function to create SVG icons
+            const createIcon = (paths) => ({ size = 24, className = "", color = "currentColor", ...props }) => (
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width={size} 
+                    height={size} 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke={color} 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    className={`lucide ${className}`}
+                    {...props}
+                >
+                    {paths.map((d, i) => <path key={i} d={d} />)}
+                    {props.children}
+                </svg>
+            );
 
-          return (
-            <div className="min-h-screen bg-slate-50 text-gray-800 pb-10" style={{ fontFamily: '"Sarabun", sans-serif' }}>
-              <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
-                body { font-family: 'Sarabun', sans-serif !important; }
-              `}</style>
-
-              {/* Header Area */}
-              <header className="bg-gradient-to-r from-blue-700 to-indigo-800 text-white shadow-xl relative pb-8">
-                <div className="max-w-5xl mx-auto p-6 md:p-8">
-                   {/* Plan Type Switcher */}
-                   <div className="flex justify-center mb-6">
-                      <div className="bg-black/30 p-1 rounded-full flex backdrop-blur-md border border-white/20">
-                         <button 
-                            onClick={() => setPlanType('full')}
-                            className={`px-6 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${planType === 'full' ? 'bg-white text-indigo-700 shadow-md' : 'text-white/70 hover:text-white'}`}
-                         >
-                            <Activity size={16} /> มี Chester Step Test
-                         </button>
-                         <button 
-                            onClick={() => {
-                                setPlanType('basic');
-                                if (activeTab === 'staff') setActiveTab('plan'); 
-                            }}
-                            className={`px-6 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${planType === 'basic' ? 'bg-white text-indigo-700 shadow-md' : 'text-white/70 hover:text-white'}`}
-                         >
-                            <LayoutTemplate size={16} /> ไม่ทำ Step Test (พื้นฐาน)
-                         </button>
-                      </div>
-                   </div>
-
-                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                      <div>
-                        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3 text-white">
-                          <Wifi className="h-8 w-8 text-cyan-300" />
-                          Smart Health Check 2569
-                        </h1>
-                        
-                        <div className="mt-3 inline-flex items-center bg-black/20 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-sm font-medium text-blue-50">
-                          <Database className="w-4 h-4 mr-2 text-cyan-300" />
-                          <span>ระบบ Paperless เต็มรูปแบบ</span>
-                          <span className="mx-2 opacity-50">|</span>
-                          <span>Real-time Data Sync</span>
-                          {planType === 'basic' && <span className="ml-2 bg-red-500/80 px-2 py-0.5 rounded text-xs text-white border border-red-400">Basic Mode</span>}
-                        </div>
-                      </div>
-                   </div>
-
-                   {/* Modern Tab Navigation */}
-                   <div className="flex justify-center md:justify-start overflow-x-auto pb-2 md:pb-0">
-                     <div className="inline-flex bg-black/20 p-1.5 rounded-2xl backdrop-blur-sm border border-white/10 shadow-inner">
-                        <button
-                          onClick={() => setActiveTab('plan')}
-                          className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
-                            activeTab === 'plan' 
-                              ? 'bg-white text-indigo-800 shadow-lg scale-100' 
-                              : 'text-white/80 hover:bg-white/10 hover:text-white'
-                          }`}
-                        >
-                          <Smartphone size={18} className={activeTab === 'plan' ? 'text-indigo-600' : ''} /> 
-                          <span className="hidden md:inline">Digital Workflow</span>
-                          <span className="md:hidden">Flow</span>
-                        </button>
-                        
-                        <button
-                          onClick={() => setActiveTab('equip')}
-                          className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
-                            activeTab === 'equip' 
-                              ? 'bg-white text-indigo-800 shadow-lg scale-100' 
-                              : 'text-white/80 hover:bg-white/10 hover:text-white'
-                          }`}
-                        >
-                          <PackageCheck size={18} className={activeTab === 'equip' ? 'text-indigo-600' : ''} /> 
-                          <span className="hidden md:inline">Hardware Setup</span>
-                          <span className="md:hidden">Equip</span>
-                        </button>
-
-                        <button
-                          onClick={() => setActiveTab('prep')}
-                          className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
-                            activeTab === 'prep' 
-                              ? 'bg-white text-indigo-800 shadow-lg scale-100' 
-                              : 'text-white/80 hover:bg-white/10 hover:text-white'
-                          }`}
-                        >
-                          <Info size={18} className={activeTab === 'prep' ? 'text-indigo-600' : ''} /> 
-                          <span className="hidden md:inline">การเตรียมตัว (App)</span>
-                          <span className="md:hidden">เตรียมตัว</span>
-                        </button>
-
-                        {planType === 'full' && (
-                            <button
-                            onClick={() => setActiveTab('staff')}
-                            className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
-                                activeTab === 'staff' 
-                                ? 'bg-white text-indigo-800 shadow-lg scale-100' 
-                                : 'text-white/80 hover:bg-white/10 hover:text-white'
-                            }`}
-                            >
-                            <ClipboardCheck size={18} className={activeTab === 'staff' ? 'text-indigo-600' : ''} /> 
-                            <span className="hidden md:inline">คู่มือ App (St.4)</span>
-                            <span className="md:hidden">App St.4</span>
-                            </button>
-                        )}
-
-                        <button
-                          onClick={() => setActiveTab('criteria')}
-                          className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
-                            activeTab === 'criteria' 
-                              ? 'bg-white text-indigo-800 shadow-lg scale-100' 
-                              : 'text-white/80 hover:bg-white/10 hover:text-white'
-                          }`}
-                        >
-                          <FileSearch size={18} className={activeTab === 'criteria' ? 'text-indigo-600' : ''} /> 
-                          <span className="hidden md:inline">Algorithm แปลผล</span>
-                          <span className="md:hidden">เกณฑ์</span>
-                        </button>
-                     </div>
-                   </div>
-                </div>
-                
-                <div className="absolute bottom-0 left-0 w-full h-4 bg-slate-50 rounded-t-[20px]"></div>
-              </header>
-
-              <div className="max-w-5xl mx-auto p-4 md:p-6 -mt-2 min-h-[600px]">
-                
-                {/* --- CONTENT: PLAN --- */}
-                {activeTab === 'plan' && (
-                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    
-                    {/* Controls */}
-                    <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-200">
-                      <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center border-b pb-2">
-                        <Database className="mr-2 text-indigo-600" /> ตั้งค่า Database ผู้เข้าร่วม
-                      </h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            จำนวน User/Account ทั้งหมด
-                          </label>
-                          <div className="relative">
-                            <input 
-                              type="number" 
-                              value={volunteerCount}
-                              onChange={(e) => setVolunteerCount(Math.max(0, parseInt(e.target.value) || 0))}
-                              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all text-lg font-bold text-gray-800"
-                            />
-                            <UserPlus className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
-                          </div>
-                        </div>
-                        
-                        <div className="bg-blue-50 text-blue-800 p-4 rounded-lg border border-blue-100 text-sm">
-                            {planType === 'full' ? (
-                                <p><strong>System Note:</strong> คำนวณ Bandwidth/Server Load สำหรับ Step Test 100%</p>
-                            ) : (
-                                <p><strong>System Note:</strong> โหมด Basic - ปิดโมดูล Step Test เพื่อประหยัดเวลา</p>
-                            )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Stations Content */}
-                    <div className="space-y-6">
-                      <StationCard 
-                        number="1"
-                        title="E-Registration & Online Screening"
-                        personnel="เจ้าหน้าที่: Admin ธุรการ"
-                        color="border-blue-500"
-                        icon={QrCode}
-                        description={`• อาสาฯ สแกน **QR Code** เพื่อเข้าสู่ระบบลงทะเบียน
-            • กรอกแบบคัดกรองสุขภาพ (Google Form / Web App) บนมือถือตนเอง
-            • ระบบสร้าง **Digital Health ID** บนหน้าจอมือถือ
-            • ⚠️ แสดงหน้าจอมือถือเพื่อยืนยันตัวตนในจุดถัดไป`}
-                        equipment={[
-                          `ป้าย QR Code ตั้งโต๊ะขนาดใหญ่: 4 จุด`,
-                          `Tablet/Notebook สำหรับ Admin (แก้ปัญหา User): 2 เครื่อง`,
-                          `Pocket Wi-Fi / Router (Internet แรงๆ)`,
-                          "Power Bank สำรองสำหรับอาสาฯ"
-                        ]}
-                      />
-
-                      <StationCard 
-                        number="2"
-                        title="Smart Vitals (วัดสัญญาณชีพ)"
-                        personnel="เจ้าหน้าที่: Key Data 2 ท่าน"
-                        color="border-green-500"
-                        icon={Tablet}
-                        description={planType === 'full' 
-                            ? `• วัดความดันโลหิต, น้ำหนัก, ส่วนสูง (เครื่องมือปกติ)
-            • **เจ้าหน้าที่คีย์ข้อมูล** ลงใน Tablet เข้าระบบ Cloud ทันที
-            • ระบบประมวลผล BMI และ Flag ความเสี่ยงเบื้องต้น (สีเขียว/เหลือง/แดง)
-            • ⚠️ ข้อมูล Sync ไปที่ Dashboard แพทย์ (Station 3) อัตโนมัติ`
-                            : `• วัดความดันโลหิต, น้ำหนัก, ส่วนสูง
-            • เจ้าหน้าที่คีย์ข้อมูลลง Tablet
-            • ⚠️ ข้อมูลเด้งไปที่หน้าจอแพทย์ทันที`
-                        }
-                        equipment={[
-                          `Tablet/iPad สำหรับคีย์ข้อมูล: ${bpMonitorCount} เครื่อง`,
-                          `เครื่องวัดความดัน (Digital) ${bpMonitorCount} เครื่อง`,
-                          "เครื่องชั่งน้ำหนัก / ที่วัดส่วนสูง",
-                          "โต๊ะ/เก้าอี้ พร้อมปลั๊กไฟสำหรับชาร์จ Tablet"
-                        ]}
-                      />
-
-                      <StationCard 
-                        number="3"
-                        title={planType === 'full' ? "Tele-Consult / Doctor Station" : "Doctor Station (จุดสุดท้าย)"}
-                        personnel="เจ้าหน้าที่: แพทย์ (พร้อม Notebook)"
-                        color="border-purple-600"
-                        icon={Stethoscope}
-                        description={planType === 'full' 
-                            ? `• **รอบแรก:** แพทย์ดูข้อมูล Vital Sign บนหน้าจอ Dashboard
-              - ระบบแจ้งเตือนเคส BMI สูง / ความดันสูง (Red Alert)
-              - แพทย์กด "ผ่าน" ในระบบ -> สถานะเปลี่ยนเป็น "Ready for Step Test"
+            // Icon Definitions (SVG Paths)
+            const LucideIcons = {
+                Activity: createIcon(["M22 12h-4l-3 9L9 3l-3 9H2"]),
+                AlertCircle: createIcon(["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"]), // Using Shield-like shape for Alert/Safety or Circle
+                // Correcting AlertCircle to actual Circle with !
+                AlertCircle: ({ size=24, color="currentColor", className="" }) => (
+                    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                ),
+                ArrowDown: createIcon(["M12 5v14", "m19 12-7 7-7-7"]),
+                ArrowRight: createIcon(["M5 12h14", "m12 5 7-7-7-7"]),
+                BarChart3: createIcon(["M3 3v18h18", "M18 17V9", "M13 17V5", "M8 17v-3"]),
+                BriefcaseMedical: createIcon(["M12 11v4", "M14 13h-4", "M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2", "M18 6v14", "M6 6v14", "M6 6h12", "M6 20h12"]), // Simplified
+                Building2: createIcon(["M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z", "M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2", "M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2", "M10 6h4", "M10 10h4", "M10 14h4", "M10 18h4"]),
+                Calculator: createIcon(["M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2", "M12 18h.01", "M8 18h.01", "M16 18h.01", "M12 14h.01", "M8 14h.01", "M16 14h.01", "M12 10h.01", "M8 10h.01", "M16 10h.01"]),
+                CalendarClock: createIcon(["M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5", "M16 2v4", "M8 2v4", "M3 10h5", "M21 10h-5.5", "M20 13.5v.5", "M16 17h.01", "M22 22l-5-5"]), // Approximate
+                // Fix CalendarClock to be simpler
+                CalendarClock: ({ size=24, color="currentColor", className="" }) => (
+                     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M20 14h-2"/><path d="M18 14v4"/><path d="M22 22l-2-2"/></svg>
+                ),
+                CheckCircle: createIcon(["M22 11.08V12a10 10 0 1 1-5.93-9.14", "M22 4 12 14.01l-3-3"]),
+                ClipboardCheck: createIcon(["M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2", "M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z", "m9 14 2 2 4-4"]),
+                ClipboardList: createIcon(["M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2", "M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1Z", "M12 11h4", "M12 16h4", "M8 11h.01", "M8 16h.01"]),
+                Coffee: createIcon(["M17 8h1a4 4 0 1 1 0 8h-1", "M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z", "M6 2v2", "M10 2v2", "M14 2v2"]),
+                CreditCard: createIcon(["M2 10h20", "M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2Z"]), // Wallet/Card mix
+                // Better CreditCard
+                CreditCard: ({ size=24, color="currentColor", className="" }) => (
+                    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                ),
+                FileCheck: createIcon(["M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2Z", "M12 13h5", "m9 15 2 2 4-4"]), // Simplified
+                // Correct FileCheck
+                FileCheck: ({ size=24, color="currentColor", className="" }) => (
+                    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2Z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg>
+                ),
+                FileSearch: createIcon(["M14 2v6h6", "M4 17V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2h-6", "M10 18a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z", "m12.5 17.5 1.5 1.5"]),
+                FileText: createIcon(["M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2Z", "M14 2v6h6", "M16 13H8", "M16 17H8", "M10 9H8"]),
+                HeartPulse: createIcon(["M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z", "M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3H21"]),
+                Info: createIcon(["M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10Z", "M12 16v-4", "M12 8h.01"]),
+                LayoutTemplate: createIcon(["M21 3H3v7h18V3z", "M21 14h-9v7h9v-7z", "M8 14H3v7h5v-7z"]),
+                Moon: createIcon(["M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"]),
+                PackageCheck: createIcon(["m16 16 2 2 4-4", "M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14", "M16.5 9.4 7.55 4.24"]),
+                PenTool: createIcon(["m12 19 7-7 3 3-7 7-3-3z", "m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z", "m2 2 7.586 7.586", "Circle at 11 11"]), // Simplified
+                // Better PenTool
+                PenTool: ({ size=24, color="currentColor", className="" }) => (
+                    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+                ),
+                Pill: createIcon(["m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z", "m8.5 8.5 7 7"]),
+                PlayCircle: createIcon(["M10 8l6 4-6 4V8z", "M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"]),
+                RotateCcw: createIcon(["M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", "M3 3v5h5"]),
+                Scale: createIcon(["m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z", "m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z", "M7 21h10", "M12 3v18", "M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"]),
+                ScanLine: createIcon(["M3 7V5a2 2 0 0 1 2-2h2", "M17 3h2a2 2 0 0 1 2 2v2", "M21 17v2a2 2 0 0 1-2 2h-2", "M7 21H5a2 2 0 0 1-2-2v-2", "M7 12h10"]),
+                Send: createIcon(["m22 2-7 20-4-9-9-4Z", "M22 2 11 13"]),
+                Shirt: createIcon(["M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23Z"]),
+                Stethoscope: createIcon(["M11 2v2", "M5 2v2", "M5 5h6", "M8 5v14a4 4 0 0 0 8 0v-4h2a2 2 0 0 1 2 2v3", "M18 12a2 2 0 0 1-2 2h-2v-4h4Z"]), // Simplified
+                // Better Stethoscope
+                Stethoscope: ({ size=24, color="currentColor", className="" }) => (
+                    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v6a2 2 0 0 0 2 2v0a2 2 0 0 0 2-2v-6"/><path d="M11 3v2"/><path d="M5 3v2"/></svg>
+                ),
+                StopCircle: createIcon(["M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10Z", "M9 9h6v6H9z"]),
+                Thermometer: createIcon(["M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"]),
+                Timer: createIcon(["M10 2h4", "M12 14v-4", "M4 13a8 8 0 0 1 8-7 8 8 0 1 1-8 8", "M18 4 6 18"]), // Mix of Timer/Off
+                // Better Timer
+                Timer: ({ size=24, color="currentColor", className="" }) => (
+                    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg>
+                ),
+                UserPlus: createIcon(["M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", "M8 7a4 4 0 1 0 8 0 4 4 0 0 0-8 0", "M19 8v6", "M22 11h-6"]),
+                Users: createIcon(["M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", "M9 10a4 4 0 1 0 0-8 4 4 0 0 0 0 8", "M22 21v-2a4 4 0 0 0-3-3.87", "M16 3.13a4 4 0 0 1 0 7.75"]),
+                Weight: createIcon(["M13.5 22H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4", "M6 5 2 9", "M18 5l4 4", "M18.5 22a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"])
+            };
             
-            • **รอบสอง:** หลังทำ Step Test ข้อมูล VO2Max จะเด้งเข้ามาที่หน้าจอแพทย์
-              - แพทย์กดสรุปผล "Fit for Duty" หรือ "Unfit"
-              - ระบบส่ง E-Certificate หรือผลตรวจเข้ามือถืออาสาฯ`
-                            : `• แพทย์ดูข้อมูล Vital Sign บนหน้าจอ
-              • ตรวจร่างกาย
-              • แพทย์กดบันทึกผลวินิจฉัยลงระบบ Cloud
-              • จบภารกิจ (Data Saved)`
-                        }
-                        note={planType === 'full' ? "Paperless 100%: ไม่มีการถือกระดาษไปมา ข้อมูลวิ่งผ่าน Server" : "ข้อมูลถูกจัดเก็บแบบ Digital สามารถ Export เป็น Excel ได้ทันที"}
-                        equipment={[
-                          "Notebook สำหรับแพทย์ดู Dashboard: 2 เครื่อง",
-                          "เมาส์ / แผ่นรองเมาส์ / ปลั๊กพ่วง",
-                          `เครื่องวัดความดัน (สำรอง) ${bpMonitorBackup} เครื่อง`,
-                          "Stethoscope / ไฟฉาย",
-                          "อินเทอร์เน็ตที่เสถียร (สำคัญมาก)"
-                        ]}
-                      />
+            // ใช้ตัวแปรนี้แทน lucideReact ที่โหลดจาก CDN
+            const { 
+                ClipboardList, Activity, Thermometer, FileText, CheckCircle, Calculator, 
+                HeartPulse, Stethoscope, ScanLine, UserPlus, PenTool, ArrowRight, ArrowDown, 
+                Users, FileCheck, Info, AlertCircle, Shirt, Moon, Coffee, CreditCard, 
+                Pill, Timer, StopCircle, BarChart3, ClipboardCheck, RotateCcw, Building2, 
+                BriefcaseMedical, CalendarClock, PackageCheck, FileSearch, Scale, Weight, 
+                PlayCircle, Send, LayoutTemplate 
+            } = LucideIcons;
 
-                      {planType === 'full' && (
-                          <StationCard 
-                            number="4"
-                            title="Digital Step Test"
-                            personnel="เจ้าหน้าที่: คุมสอบ & บันทึกผล"
-                            color="border-red-500"
-                            icon={Smartphone}
-                            description={`• ใช้ **Metronome App** เปิดจังหวะผ่านลำโพง
-                • เจ้าหน้าที่จับเวลาและวัดชีพจร
-                • **กรอกค่าชีพจร (HR)** ลงใน Web App ตาม Stage (ไม่ต้องวาดกราฟเอง)
-                • ระบบคำนวณ VO2Max และตัดเกณฑ์ให้อัตโนมัติ
-                • ⚠️ กด Submit ข้อมูลวิ่งกลับไปหาแพทย์ทันที`}
-                            note={`ระบบจะบล็อคไม่ให้ทำ Step Test หาก Station 3 ยังไม่กด "อนุมัติ"`}
-                            equipment={[
-                              "Step Box (สูง 25/30 ซม.): 3-5 กล่อง",
-                              "Tablet/มือถือ สำหรับกรอกผล: 2-3 เครื่อง",
-                              "ลำโพง Bluetooth (เปิดจังหวะจาก App)",
-                              "เครื่องวัดออกซิเจนปลายนิ้ว",
-                              "Power Bank / สายชาร์จ"
-                            ]}
-                          />
-                      )}
-                    </div>
+            function WildfireHealthCheckPlan() {
+                // ปิดหน้าโหลดเมื่อ App เริ่มทำงาน
+                useEffect(() => {
+                    const loader = document.getElementById('loading');
+                    if(loader) loader.style.display = 'none';
+                }, []);
 
-                    {/* Infographic Section */}
-                    <div className="bg-white rounded-xl shadow-xl p-6 md:p-10 my-10 border border-gray-200">
-                      <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center justify-center">
-                          <Wifi className="mr-2 text-indigo-600" /> Digital Workflow Diagram
-                      </h3>
-                      
-                      <div className="flex flex-col md:flex-row justify-between items-start md:items-start gap-4 md:gap-0 px-2 md:px-8">
-                          
-                          <InfographicStep 
-                            icon={QrCode} 
-                            title="1. Scan QR" 
-                            subtitle="ลงทะเบียนผ่านมือถือ"
-                            color="bg-blue-500"
-                            docAction="Create ID"
-                          />
+                const [activeTab, setActiveTab] = useState('plan'); 
+                const [planType, setPlanType] = useState('full');
+                const [volunteerCount, setVolunteerCount] = useState(392);
+                
+                const bpMonitorCount = 4;
+                const bpMonitorBackup = 2;
 
-                          <InfographicStep 
-                            icon={Tablet} 
-                            title="2. Key Vitals" 
-                            subtitle="จนท.คีย์ลง Tablet"
-                            color="bg-green-500"
-                            docAction="Cloud Sync"
-                          />
-
-                          {planType === 'full' ? (
-                              <>
-                                <InfographicStep 
-                                    icon={Stethoscope} 
-                                    title="3. Doctor View" 
-                                    subtitle="ดู Dashboard/อนุมัติ"
-                                    color="bg-purple-600"
-                                    note="*ระบบคัดกรองอัตโนมัติ"
-                                    docAction="Approve Status"
-                                />
-
-                                <InfographicStep 
-                                    icon={Smartphone} 
-                                    title="4. App Record" 
-                                    subtitle="กรอก HR ลง App"
-                                    color="bg-red-500"
-                                    docAction="Auto Calc VO2"
-                                    returnAction={true}
-                                />
-
-                                <InfographicStep 
-                                    icon={Database} 
-                                    title="3. Finalize" 
-                                    subtitle="แพทย์สรุปในระบบ"
-                                    color="bg-purple-600"
-                                    isLast={true}
-                                    docAction="Save to Cloud"
-                                />
-                              </>
-                          ) : (
-                              <InfographicStep 
-                                icon={Stethoscope} 
-                                title="3. Doctor View" 
-                                subtitle="ดูผล & วินิจฉัย"
-                                color="bg-purple-600"
-                                isLast={true}
-                                docAction="Save to Cloud"
-                              />
-                          )}
-
-                      </div>
-                      
-                      <div className="mt-8 bg-blue-50 p-4 rounded-lg border border-blue-200 text-center">
-                          <p className="text-sm text-blue-800">
-                            <span className="font-bold">Paperless Concept:</span> ลดการใช้กระดาษ 100% ข้อมูลแม่นยำ รวดเร็ว และ Export รายงานได้ทันที
-                          </p>
-                      </div>
-                    </div>
-
-                    {/* Summary Dashboard */}
-                    <div className="bg-slate-900 text-white rounded-xl shadow-xl p-6 md:p-8 mt-10">
-                      <h3 className="text-2xl font-bold mb-6 border-b border-slate-700 pb-4">
-                        IT Resource Requirement (สำหรับ {volunteerCount} Users)
-                      </h3>
-                      
-                      <div className={`grid grid-cols-1 ${planType === 'full' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4 md:gap-6`}>
-                        <div className="bg-slate-800 p-4 rounded-lg border border-slate-700">
-                          <h4 className="text-slate-400 text-xs font-semibold uppercase mb-2">Digital Forms</h4>
-                          <p className="text-3xl md:text-4xl font-bold text-blue-400">{volunteerCount}</p>
-                          <p className="text-xs text-slate-500 mt-1">Records on Cloud</p>
-                        </div>
-
-                        <div className="bg-slate-800 p-4 rounded-lg border border-slate-700">
-                          <h4 className="text-slate-400 text-xs font-semibold uppercase mb-2">Device Transactions</h4>
-                          <p className="text-3xl md:text-4xl font-bold text-purple-400">{volunteerCount * 3}</p>
-                          <p className="text-xs text-slate-500 mt-1">API Calls (โดยประมาณ)</p>
-                        </div>
-
-                        {planType === 'full' && (
-                            <div className="bg-slate-800 p-4 rounded-lg border border-slate-700">
-                            <h4 className="text-slate-400 text-xs font-semibold uppercase mb-2">Auto Calculation</h4>
-                            <p className="text-3xl md:text-4xl font-bold text-red-400">100%</p>
-                            <p className="text-xs text-slate-500 mt-1">VO2Max Processed</p>
+                // --- Components ---
+                const StationCard = ({ number, title, personnel, description, equipment, color, icon: Icon, note }) => (
+                    <div className={`bg-white rounded-xl shadow-md overflow-hidden border-t-4 ${color} mb-6`}>
+                    <div className="p-6">
+                        <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                            <div className={`p-3 rounded-full bg-gray-50 ${color.replace('border-', 'text-')}`}>
+                            <Icon size={24} />
                             </div>
-                        )}
-                      </div>
-                      
-                      <div className="mt-6 bg-slate-800/50 p-4 rounded-lg border border-slate-700 text-sm">
-                        <h4 className="font-bold text-gray-200 mb-2 flex items-center">
-                            <Wifi className="w-4 h-4 mr-2 text-green-500" /> 
-                            อุปกรณ์ IT ที่ต้องเตรียม
+                            <div>
+                            <h3 className="text-lg font-bold text-gray-800">จุดที่ {number}: {title}</h3>
+                            <p className="text-sm text-gray-600 font-medium">{personnel}</p>
+                            </div>
+                        </div>
+                        <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-bold border border-gray-200">
+                            Station {number}
+                        </span>
+                        </div>
+                        
+                        <div className="mb-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        <h4 className="font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide">ขั้นตอน/เงื่อนไข:</h4>
+                        <div className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{description}</div>
+                        {note && <div className="mt-3 text-xs text-orange-600 bg-orange-50 p-2 rounded border border-orange-100"><strong>หมายเหตุ:</strong> {note}</div>}
+                        </div>
+
+                        <div>
+                        <h4 className="font-semibold text-gray-700 mb-2 text-sm uppercase tracking-wide flex items-center">
+                            <ClipboardList className="w-4 h-4 mr-1" /> สิ่งที่ต้องเตรียม & คำนวณยอด
                         </h4>
-                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-400">
-                            <li>• Tablets/iPads รวม (จุด 2, 3, 4): <strong>6-8 เครื่อง</strong></li>
-                            {planType === 'full' && <li>• Notebook (Admin/Doctor): <strong>3-4 เครื่อง</strong></li>}
-                            <li>• Pocket Wi-Fi / Router 5G: <strong>2 จุด (ครอบคลุมพื้นที่)</strong></li>
-                            <li>• ปลั๊กพ่วง (Charging Station): <strong>4 จุด</strong></li>
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                            {equipment.map((item, index) => (
+                            <li key={index} className="flex items-start text-gray-600 bg-white p-2 rounded border border-gray-100 shadow-sm">
+                                <CheckCircle className={`w-4 h-4 mr-2 mt-0.5 flex-shrink-0 ${color.replace('border-', 'text-')}`} />
+                                <span>{item}</span>
+                            </li>
+                            ))}
                         </ul>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* --- CONTENT: EQUIPMENT CHECKLIST (NEW TAB) --- */}
-                {activeTab === 'equip' && (
-                  <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="text-center mb-8 pt-4">
-                        <h2 className="text-2xl font-bold text-gray-800">Hardware & IT Checklist</h2>
-                        <p className="text-gray-600">รายการอุปกรณ์ดิจิทัลที่ต้องเตรียม</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        
-                        {/* SSO Checklist */}
-                        <div className="bg-white rounded-xl shadow-md border-t-4 border-blue-500 overflow-hidden">
-                            <div className="bg-blue-50 p-4 border-b border-blue-100 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                   <Building2 className="text-blue-600" size={24} />
-                                   <h3 className="font-bold text-blue-900 text-lg">ฝ่าย IT / ธุรการ</h3>
-                                </div>
-                                <span className="text-xs font-semibold bg-blue-200 text-blue-800 px-2 py-1 rounded">Network & Devices</span>
-                            </div>
-                            <div className="p-6">
-                                <ul className="space-y-4">
-                                    <li className="flex items-start">
-                                        <input type="checkbox" className="mt-1 w-5 h-5 text-blue-600 rounded mr-3" />
-                                        <div>
-                                            <span className="font-bold text-gray-800 block">Internet / Wi-Fi</span>
-                                            <span className="text-sm text-gray-600">Router 5G หรือ Pocket Wi-Fi ที่รองรับ {volunteerCount} การเชื่อมต่อ</span>
-                                        </div>
-                                    </li>
-                                    <li className="flex items-start">
-                                        <input type="checkbox" className="mt-1 w-5 h-5 text-blue-600 rounded mr-3" />
-                                        <div>
-                                            <span className="font-bold text-gray-800 block">QR Code ป้ายตั้งโต๊ะ</span>
-                                            <span className="text-sm text-gray-600">พิมพ์ QR Code ทางเข้าลิงก์ลงทะเบียน วางไว้ทุกจุด</span>
-                                        </div>
-                                    </li>
-                                     <li className="flex items-start">
-                                        <input type="checkbox" className="mt-1 w-5 h-5 text-blue-600 rounded mr-3" />
-                                        <div>
-                                            <span className="font-bold text-gray-800 block">Tablet (Admin)</span>
-                                            <span className="text-sm text-gray-600">สำหรับช่วยอาสาฯ ที่ไม่มีมือถือ หรือลงทะเบียนไม่เป็น</span>
-                                        </div>
-                                    </li>
-                                    <li className="flex items-start">
-                                        <input type="checkbox" className="mt-1 w-5 h-5 text-blue-600 rounded mr-3" />
-                                        <div>
-                                            <span className="font-bold text-gray-800 block">Charging Station</span>
-                                            <span className="text-sm text-gray-600">ปลั๊กพ่วง + สายชาร์จ หลากหลายหัว (Type-C, Lightning)</span>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
                         </div>
+                    </div>
+                    </div>
+                );
 
-                        {/* Hospital Checklist */}
-                        <div className="bg-white rounded-xl shadow-md border-t-4 border-green-500 overflow-hidden">
-                            <div className="bg-green-50 p-4 border-b border-green-100 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                   <BriefcaseMedical className="text-green-600" size={24} />
-                                   <h3 className="font-bold text-green-900 text-lg">ทีมแพทย์ (User)</h3>
-                                </div>
-                                <span className="text-xs font-semibold bg-green-200 text-green-800 px-2 py-1 rounded">Medical Data Entry</span>
-                            </div>
-                            <div className="p-6">
-                                <ul className="space-y-4">
-                                    <li className="flex items-start">
-                                        <input type="checkbox" className="mt-1 w-5 h-5 text-green-600 rounded mr-3" />
-                                        <div>
-                                            <span className="font-bold text-gray-800 block">Notebook/Tablet แพทย์</span>
-                                            <span className="text-sm text-gray-600">สำหรับเปิด Dashboard ดูผลคนไข้ (Station 3)</span>
-                                        </div>
-                                    </li>
-                                    <li className="flex items-start">
-                                        <input type="checkbox" className="mt-1 w-5 h-5 text-green-600 rounded mr-3" />
-                                        <div>
-                                            <span className="font-bold text-gray-800 block">Tablet จนท. วัดความดัน</span>
-                                            <span className="text-sm text-gray-600">สำหรับคีย์ค่าความดันเข้าระบบ (Station 2)</span>
-                                        </div>
-                                    </li>
-                                    {planType === 'full' && (
-                                        <>
-                                            <li className="flex items-start">
-                                                <input type="checkbox" className="mt-1 w-5 h-5 text-green-600 rounded mr-3" />
-                                                <div>
-                                                    <span className="font-bold text-gray-800 block">Smart Device (Station 4)</span>
-                                                    <span className="text-sm text-gray-600">มือถือ/Tablet สำหรับเปิด App Metronome และกรอกผล</span>
-                                                </div>
-                                            </li>
-                                            <li className="flex items-start">
-                                                <input type="checkbox" className="mt-1 w-5 h-5 text-green-600 rounded mr-3" />
-                                                <div>
-                                                    <span className="font-bold text-gray-800 block">ลำโพง Bluetooth</span>
-                                                    <span className="text-sm text-gray-600">เชื่อมต่อกับ App เพื่อเปิดจังหวะทดสอบ</span>
-                                                </div>
-                                            </li>
-                                        </>
-                                    )}
-                                </ul>
-                            </div>
+                const InfographicStep = ({ icon: Icon, title, subtitle, color, isLast, note, docAction, returnAction }) => (
+                    <div className="flex flex-col items-center relative z-10 w-full md:w-1/5">
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg mb-4 ${color} transform transition-transform hover:scale-110 relative`}>
+                        <Icon size={32} />
+                        {returnAction && (
+                        <div className="absolute -bottom-2 -right-2 bg-yellow-400 text-yellow-900 rounded-full p-1 border-2 border-white shadow-sm">
+                            <RotateCcw size={14} />
                         </div>
-
+                        )}
                     </div>
-                  </div>
-                )}
-
-                {/* --- CONTENT: CRITERIA (UNCHANGED LOGIC, JUST DISPLAY) --- */}
-                {activeTab === 'criteria' && (
-                  <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                     <div className="bg-purple-50 border border-purple-200 rounded-xl p-6 mb-8 mt-4 text-center">
-                        <h2 className="text-2xl font-bold text-purple-800 flex justify-center items-center gap-2">
-                          <Database /> AI Algorithm Criteria
-                        </h2>
-                        <p className="text-purple-700 font-medium">เกณฑ์ที่ระบบใช้ประมวลผลอัตโนมัติ (Auto-Calculation Logic)</p>
+                    <div className="text-center bg-white p-3 rounded-lg shadow-sm border border-gray-100 w-full min-h-[110px] flex flex-col items-center">
+                        <h4 className="font-bold text-gray-800 text-sm md:text-base">{title}</h4>
+                        <p className="text-xs text-gray-500 mt-1">{subtitle}</p>
+                        {docAction && (
+                        <div className="mt-2 text-[10px] font-bold px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full border border-yellow-200 inline-flex items-center">
+                            <FileText size={10} className="mr-1" /> {docAction}
+                        </div>
+                        )}
                     </div>
-
-                    <div className="space-y-8">
-                       
-                       {/* 1. Blood Pressure Criteria */}
-                       <div className="bg-white rounded-xl shadow-md border-t-4 border-red-500 overflow-hidden">
-                          <div className="p-6">
-                             <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                <HeartPulse className="mr-2 text-red-500" /> 1. Logic ความดันโลหิต (System Flag)
-                             </h3>
-                             <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left border-collapse">
-                                   <thead className="bg-gray-100 text-gray-700">
-                                      <tr>
-                                         <th className="px-4 py-2 border">System Status</th>
-                                         <th className="px-4 py-2 border">Systolic</th>
-                                         <th className="px-4 py-2 border">Diastolic</th>
-                                         <th className="px-4 py-2 border">Action</th>
-                                      </tr>
-                                   </thead>
-                                   <tbody>
-                                      <tr className="bg-green-50">
-                                         <td className="px-4 py-2 border font-bold text-green-700">🟢 GREEN</td>
-                                         <td className="px-4 py-2 border">&lt; 120</td>
-                                         <td className="px-4 py-2 border">&lt; 80</td>
-                                         <td className="px-4 py-2 border">Pass to Next Station</td>
-                                      </tr>
-                                      <tr className="bg-yellow-50">
-                                         <td className="px-4 py-2 border font-bold text-yellow-700">🟡 YELLOW</td>
-                                         <td className="px-4 py-2 border">120 - 139</td>
-                                         <td className="px-4 py-2 border">80 - 89</td>
-                                         <td className="px-4 py-2 border">Alert Doctor (Monitor)</td>
-                                      </tr>
-                                      <tr className="bg-orange-50">
-                                         <td className="px-4 py-2 border font-bold text-orange-700">🟠 ORANGE</td>
-                                         <td className="px-4 py-2 border">140 - 159</td>
-                                         <td className="px-4 py-2 border">90 - 99</td>
-                                         <td className="px-4 py-2 border">Doctor Review Required</td>
-                                      </tr>
-                                      <tr className="bg-red-50">
-                                         <td className="px-4 py-2 border font-bold text-red-700">🔴 RED</td>
-                                         <td className="px-4 py-2 border">≥ 160</td>
-                                         <td className="px-4 py-2 border">≥ 100</td>
-                                         <td className="px-4 py-2 border text-red-600 font-bold">Block from Step Test</td>
-                                      </tr>
-                                   </tbody>
-                                </table>
-                             </div>
-                          </div>
-                       </div>
-
-                        {/* 2. BMI Criteria (NEW) */}
-                       <div className="bg-white rounded-xl shadow-md border-t-4 border-orange-500 overflow-hidden">
-                          <div className="p-6">
-                             <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                                <Weight className="mr-2 text-orange-500" /> 2. Logic BMI (Auto Calc)
-                             </h3>
-                             <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left border-collapse">
-                                   <thead className="bg-gray-100 text-gray-700">
-                                      <tr>
-                                         <th className="px-4 py-2 border">System Status</th>
-                                         <th className="px-4 py-2 border">BMI (kg/m²)</th>
-                                         <th className="px-4 py-2 border">System Action</th>
-                                      </tr>
-                                   </thead>
-                                   <tbody>
-                                      <tr className="bg-green-50">
-                                         <td className="px-4 py-2 border text-green-700">🟢 Normal</td>
-                                         <td className="px-4 py-2 border">18.5 - 22.9</td>
-                                         <td className="px-4 py-2 border">Pass</td>
-                                      </tr>
-                                      <tr className="bg-yellow-50">
-                                         <td className="px-4 py-2 border text-yellow-700">🟡 Overweight</td>
-                                         <td className="px-4 py-2 border">23.0 - 24.9</td>
-                                         <td className="px-4 py-2 border">Warning Flag</td>
-                                      </tr>
-                                      <tr className="bg-red-50">
-                                         <td className="px-4 py-2 border font-bold text-red-700">🔴 Obese</td>
-                                         <td className="px-4 py-2 border">≥ 30.0</td>
-                                         <td className="px-4 py-2 border font-bold text-red-600">System Block (Safety Protocol)</td>
-                                      </tr>
-                                   </tbody>
-                                </table>
-                             </div>
-                             <div className="mt-4 bg-orange-50 border border-orange-200 text-orange-800 text-sm p-3 rounded">
-                                <strong>System Logic:</strong> หากระบบคำนวณ BMI ≥ 30 หรือสถานะเป็น RED ปุ่ม "ส่งไป Step Test" จะถูกล็อค (Disabled) อัตโนมัติในหน้าจอแพทย์
-                             </div>
-                          </div>
-                       </div>
-
+                    {note && (
+                        <div className="mt-2 text-[10px] text-center text-red-500 font-medium bg-red-50 px-2 py-1 rounded">
+                        {note}
+                        </div>
+                    )}
+                    {!isLast && (
+                        <div className="hidden md:block absolute top-8 -right-[50%] w-full h-1 bg-gray-200 -z-10">
+                        <div className="absolute right-0 -top-1.5 text-gray-300">
+                            <ArrowRight size={16} />
+                        </div>
+                        </div>
+                    )}
+                    {!isLast && (
+                        <div className="md:hidden my-2 text-gray-300">
+                        <ArrowDown size={24} />
+                        </div>
+                    )}
                     </div>
-                  </div>
-                )}
+                );
 
-                {/* --- CONTENT: PREPARATION GUIDE --- */}
-                {activeTab === 'prep' && (
-                  <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="text-center mb-8 pt-4">
-                        <h2 className="text-2xl font-bold text-gray-800">การเตรียมตัว (User Guide)</h2>
-                        <p className="text-gray-600">สิ่งที่อาสาสมัครต้องเตรียมเพื่อใช้งานระบบ</p>
+                const PrepCard = ({ icon: Icon, title, items, caution }) => (
+                    <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-3 bg-orange-100 text-orange-600 rounded-full">
+                        <Icon size={24} />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-800">{title}</h3>
                     </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        
-                        <PrepCard 
-                          icon={Smartphone}
-                          title="1. สมาร์ทโฟน"
-                          items={[
-                            "นำมือถือมาด้วย (เพื่อสแกน QR Code ลงทะเบียน)",
-                            "ชาร์จแบตเตอรี่มาให้พร้อม (หรือเตรียม Power Bank)",
-                            "หากไม่มีมือถือ ให้ติดต่อจุดลงทะเบียนเพื่อใช้เครื่องกลาง"
-                          ]}
-                          caution="สำคัญมากสำหรับการระบุตัวตน Digital ID"
-                        />
-
-                        <PrepCard 
-                          icon={Wifi}
-                          title="2. อินเทอร์เน็ต"
-                          items={[
-                            "แนะนำให้สมัครเน็ตรายวันมาให้พร้อม",
-                            "ในพื้นที่มี Free Wi-Fi ให้บริการ (แต่อาจช้าหากคนเยอะ)",
-                            "ปิด Bluetooth/App ที่ไม่จำเป็นเพื่อประหยัดแบต"
-                          ]}
-                        />
-
-                        <PrepCard 
-                          icon={CreditCard}
-                          title="3. บัตรประชาชน (Smart Card)"
-                          items={[
-                            "เตรียมบัตรจริงมาเสียบยืนยันตัวตน (ถ้าจุดลงทะเบียนมีเครื่องอ่าน)",
-                            "หรือถ่ายรูปบัตรเก็บไว้ในมือถือเพื่อความรวดเร็วในการกรอกข้อมูล"
-                          ]}
-                        />
-
-                        <PrepCard 
-                          icon={Shirt}
-                          title="4. การแต่งกาย"
-                          items={[
-                            "ชุดที่ทะมัดทะแมง (เหมือนเดิม)",
-                            "รองเท้าผ้าใบ",
-                            "ไม่ควรใส่เครื่องประดับโลหะเยอะ (รบกวนการวัดค่าบางอย่าง)"
-                          ]}
-                        />
-
+                    <ul className="space-y-2 mb-4">
+                        {items.map((item, idx) => (
+                        <li key={idx} className="flex items-start text-gray-600 text-sm">
+                            <span className="mr-2 text-orange-500">•</span>
+                            {item}
+                        </li>
+                        ))}
+                    </ul>
+                    {caution && (
+                        <div className="bg-red-50 text-red-700 text-xs p-3 rounded-lg flex items-start">
+                        <AlertCircle size={14} className="mr-2 mt-0.5 flex-shrink-0" />
+                        {caution}
+                        </div>
+                    )}
                     </div>
+                );
+
+                return (
+                    <div className="min-h-screen bg-slate-50 text-gray-800 pb-10" style={{ fontFamily: '"Sarabun", sans-serif' }}>
                     
-                    {/* New Prep Infographic Section */}
-                    <div className="bg-white rounded-xl shadow-xl p-6 md:p-10 my-10 border border-gray-200">
-                        <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center justify-center">
-                          <CheckCircle className="mr-2 text-green-600" /> Digital Checklist
-                        </h3>
+                    {/* Header Area */}
+                    <header className="bg-gradient-to-r from-orange-700 to-red-800 text-white shadow-xl relative pb-8">
+                        <div className="max-w-5xl mx-auto p-6 md:p-8">
+                        {/* Plan Type Switcher */}
+                        <div className="flex justify-center mb-6">
+                            <div className="bg-black/30 p-1 rounded-full flex backdrop-blur-md border border-white/20">
+                                <button 
+                                    onClick={() => setPlanType('full')}
+                                    className={`px-6 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${planType === 'full' ? 'bg-white text-orange-700 shadow-md' : 'text-white/70 hover:text-white'}`}
+                                >
+                                    <Activity size={16} /> มี Chester Step Test
+                                </button>
+                                <button 
+                                    onClick={() => {
+                                        setPlanType('basic');
+                                        if (activeTab === 'staff') setActiveTab('plan'); 
+                                    }}
+                                    className={`px-6 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all ${planType === 'basic' ? 'bg-white text-orange-700 shadow-md' : 'text-white/70 hover:text-white'}`}
+                                >
+                                    <LayoutTemplate size={16} /> ไม่ทำ Step Test (พื้นฐาน)
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                            <div>
+                                <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3 text-white">
+                                <Activity className="h-8 w-8 text-yellow-300" />
+                                แผนตรวจสุขภาพอาสาดับไฟป่า 2569
+                                </h1>
+                                
+                                <div className="mt-3 inline-flex items-center bg-black/20 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-sm font-medium text-orange-50">
+                                <CalendarClock className="w-4 h-4 mr-2 text-yellow-300" />
+                                <span>2 ก.พ. 2569</span>
+                                <span className="mx-2 opacity-50">|</span>
+                                <span>เริ่มเวลา 08:30 น.</span>
+                                {planType === 'basic' && <span className="ml-2 bg-red-500/80 px-2 py-0.5 rounded text-xs text-white border border-red-400">งดทดสอบสมรรถภาพ</span>}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Modern Tab Navigation */}
+                        <div className="flex justify-center md:justify-start overflow-x-auto pb-2 md:pb-0">
+                            <div className="inline-flex bg-black/20 p-1.5 rounded-2xl backdrop-blur-sm border border-white/10 shadow-inner">
+                                <button
+                                onClick={() => setActiveTab('plan')}
+                                className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
+                                    activeTab === 'plan' 
+                                    ? 'bg-white text-orange-800 shadow-lg scale-100' 
+                                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                }`}
+                                >
+                                <Calculator size={18} className={activeTab === 'plan' ? 'text-orange-600' : ''} /> 
+                                <span className="hidden md:inline">แผนงาน & ทรัพยากร</span>
+                                <span className="md:hidden">แผนงาน</span>
+                                </button>
+                                
+                                <button
+                                onClick={() => setActiveTab('equip')}
+                                className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
+                                    activeTab === 'equip' 
+                                    ? 'bg-white text-orange-800 shadow-lg scale-100' 
+                                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                }`}
+                                >
+                                <PackageCheck size={18} className={activeTab === 'equip' ? 'text-orange-600' : ''} /> 
+                                <span className="hidden md:inline">อุปกรณ์ (แยกฝ่าย)</span>
+                                <span className="md:hidden">อุปกรณ์</span>
+                                </button>
+
+                                <button
+                                onClick={() => setActiveTab('prep')}
+                                className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
+                                    activeTab === 'prep' 
+                                    ? 'bg-white text-orange-800 shadow-lg scale-100' 
+                                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                }`}
+                                >
+                                <Info size={18} className={activeTab === 'prep' ? 'text-orange-600' : ''} /> 
+                                <span className="hidden md:inline">การเตรียมตัว (อาสาฯ)</span>
+                                <span className="md:hidden">เตรียมตัว</span>
+                                </button>
+
+                                {planType === 'full' && (
+                                    <button
+                                    onClick={() => setActiveTab('staff')}
+                                    className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
+                                        activeTab === 'staff' 
+                                        ? 'bg-white text-orange-800 shadow-lg scale-100' 
+                                        : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                    }`}
+                                    >
+                                    <ClipboardCheck size={18} className={activeTab === 'staff' ? 'text-orange-600' : ''} /> 
+                                    <span className="hidden md:inline">คู่มือ จนท. (St.4)</span>
+                                    <span className="md:hidden">จนท. St.4</span>
+                                    </button>
+                                )}
+
+                                <button
+                                onClick={() => setActiveTab('criteria')}
+                                className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
+                                    activeTab === 'criteria' 
+                                    ? 'bg-white text-orange-800 shadow-lg scale-100' 
+                                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                }`}
+                                >
+                                <FileSearch size={18} className={activeTab === 'criteria' ? 'text-orange-600' : ''} /> 
+                                <span className="hidden md:inline">เกณฑ์การแปลผล</span>
+                                <span className="md:hidden">เกณฑ์หมอ</span>
+                                </button>
+                            </div>
+                        </div>
+                        </div>
                         
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-start gap-4 md:gap-0 px-2 md:px-8">
-                          <InfographicStep 
-                              icon={Smartphone} 
-                              title="1. มือถือ" 
-                              subtitle="มีเน็ต/แบตเต็ม"
-                              color="bg-indigo-500"
-                          />
-                          <InfographicStep 
-                              icon={QrCode} 
-                              title="2. App Scan" 
-                              subtitle="มี Line/App สแกน"
-                              color="bg-orange-500"
-                          />
-                          <InfographicStep 
-                              icon={Shirt} 
-                              title="3. ชุดพร้อม" 
-                              subtitle="รองเท้าผ้าใบ"
-                              color="bg-blue-500"
-                          />
-                          <InfographicStep 
-                              icon={CreditCard} 
-                              title="4. บัตร ปชช." 
-                              subtitle="Smart Card"
-                              color="bg-teal-600"
-                              isLast={true}
-                          />
-                        </div>
-                    </div>
-                  </div>
-                )}
+                        <div className="absolute bottom-0 left-0 w-full h-4 bg-slate-50 rounded-t-[20px]"></div>
+                    </header>
 
-                {/* --- CONTENT: STAFF GUIDE --- */}
-                {activeTab === 'staff' && (
-                  <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-6 mb-8 mt-4 text-center">
-                        <h2 className="text-2xl font-bold text-indigo-800 flex justify-center items-center gap-2">
-                          <Smartphone /> คู่มือการใช้ App (Admin & Staff)
-                        </h2>
-                        <p className="text-indigo-700 font-medium">ขั้นตอนการคีย์ข้อมูลและดูแลระบบ</p>
-                    </div>
-
-                    <div className="space-y-6">
+                    {/* Main Content Area */}
+                    <div className="max-w-5xl mx-auto p-4 md:p-6 -mt-2 min-h-[600px]">
                         
-                        <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-yellow-500">
-                          <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                              <Wifi className="mr-2 text-yellow-600" /> Pre-Flight Check (ก่อนเริ่มงาน)
-                          </h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              <label className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                <input type="checkbox" className="w-5 h-5 text-yellow-600 rounded" />
-                                <span className="text-gray-700 font-medium">ตรวจสอบสัญญาณ Wi-Fi ทุกจุด</span>
-                              </label>
-                              <label className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                <input type="checkbox" className="w-5 h-5 text-yellow-600 rounded" />
-                                <span className="text-gray-700 font-medium">Tablet ทุกเครื่องแบตเตอรี่ 100%</span>
-                              </label>
-                              <label className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                <input type="checkbox" className="w-5 h-5 text-yellow-600 rounded" />
-                                <span className="text-gray-700 font-medium">Log-in เข้าระบบ Admin เรียบร้อย</span>
-                              </label>
-                              <label className="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                <input type="checkbox" className="w-5 h-5 text-yellow-600 rounded" />
-                                <span className="text-gray-700 font-medium">ทดสอบ Sync ข้อมูล (Station 2 -> 3)</span>
-                              </label>
-                          </div>
-                        </div>
+                        {/* --- CONTENT: PLAN --- */}
+                        {activeTab === 'plan' && (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            
+                            {/* Controls */}
+                            <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-200">
+                            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center border-b pb-2">
+                                <Calculator className="mr-2 text-orange-600" /> ตั้งค่าจำนวนผู้เข้าร่วม
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                                <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    จำนวนอาสาสมัครทั้งหมด (คน)
+                                </label>
+                                <div className="relative">
+                                    <input 
+                                    type="number" 
+                                    value={volunteerCount}
+                                    onChange={(e) => setVolunteerCount(Math.max(0, parseInt(e.target.value) || 0))}
+                                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all text-lg font-bold text-gray-800"
+                                    />
+                                    <UserPlus className="absolute left-3 top-3.5 text-gray-400 w-5 h-5" />
+                                </div>
+                                </div>
+                                
+                                <div className="bg-orange-50 text-orange-800 p-4 rounded-lg border border-orange-100 text-sm">
+                                    {planType === 'full' ? (
+                                        <p><strong>หมายเหตุ:</strong> ระบบจะคำนวณอุปกรณ์จุดที่ 4 (Step Test) เผื่อสำหรับ 100% ของผู้ลงทะเบียน</p>
+                                    ) : (
+                                        <p><strong>หมายเหตุ:</strong> รูปแบบพื้นฐาน - ไม่มีการทดสอบสมรรถภาพทางกาย (Step Test) เน้นการตรวจคัดกรองโรคพื้นฐาน</p>
+                                    )}
+                                </div>
+                            </div>
+                            </div>
 
-                        <div className="bg-red-50 p-6 rounded-xl border border-red-200">
-                          <h3 className="text-lg font-bold text-red-800 mb-4 flex items-center">
-                              <AlertCircle className="mr-2" /> Troubleshooting (แก้ปัญหาเบื้องต้น)
-                          </h3>
-                          <ul className="space-y-2 text-red-700 list-disc list-inside">
-                              <li><strong>เน็ตหลุด:</strong> ให้สลับไปใช้ Hotspot มือถือสำรองทันที (Offline Mode บันทึกได้ชั่วคราว)</li>
-                              <li><strong>QR Code สแกนไม่ได้:</strong> ให้ใช้ Tablet Admin ลงทะเบียนแทน (Manual Register)</li>
-                              <li><strong>ระบบค้าง:</strong> ให้ Refresh หน้าเว็บ (ข้อมูล Auto-save ทุก 5 วินาที ไม่หายแน่นอน)</li>
-                          </ul>
-                        </div>
+                            {/* Stations Content */}
+                            <div className="space-y-6">
+                            <StationCard 
+                                number="1"
+                                title="ลงทะเบียน & คัดกรองเบื้องต้น"
+                                personnel="เจ้าหน้าที่: สสอ. สันทราย"
+                                color="border-blue-500"
+                                icon={FileText}
+                                description={`• รับเอกสารลงทะเบียน และแบบคัดกรอง
+                    • กรอกแบบคัดกรองสุขภาพด้วยตนเอง (แผ่นแรก)
+                    • ⚠️ อาสาฯ ถือเอกสารติดตัวไปยังจุดถัดไป`}
+                                equipment={[
+                                `แบบคัดกรองสุขภาพ (ตนเอง): ${volunteerCount} ชุด`,
+                                `แบบคัดกรองสุขภาพ (จนท.): ${volunteerCount} ชุด`,
+                                `ปากกา: ${Math.ceil(volunteerCount * 0.3)} ด้าม`,
+                                "โต๊ะ/เก้าอี้ ลงทะเบียน"
+                                ]}
+                            />
 
-                        {/* NEW: Staff Workflow Infographic */}
-                        <div className="bg-white rounded-xl shadow-xl p-6 md:p-10 my-10 border border-gray-200">
-                          <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center justify-center">
-                              <Database className="mr-2 text-indigo-600" /> Data Flow
-                          </h3>
-                          <div className="flex flex-col md:flex-row justify-between items-start md:items-start gap-4 md:gap-0 px-2 md:px-8">
-                              <InfographicStep 
-                                icon={QrCode} 
-                                title="1. Input" 
-                                subtitle="QR Scan / Manual"
-                                color="bg-yellow-500"
-                              />
-                              <InfographicStep 
-                                icon={Database} 
-                                title="2. Process" 
-                                subtitle="Cloud Calculation"
-                                color="bg-blue-500"
-                              />
-                              <InfographicStep 
-                                icon={Tablet} 
-                                title="3. Monitor" 
-                                subtitle="Dashboard Realtime"
-                                color="bg-green-500"
-                                isLast={true}
-                              />
-                          </div>
+                            <StationCard 
+                                number="2"
+                                title="วัดสัญญาณชีพ & ซักประวัติ"
+                                personnel="เจ้าหน้าที่: นวก. + พยาบาล (พว.)"
+                                color="border-green-500"
+                                icon={Thermometer}
+                                description={planType === 'full' 
+                                    ? `• วัดความดันโลหิต, น้ำหนัก, ส่วนสูง
+                    • เจ้าหน้าที่กรอกข้อมูลลงในเอกสารที่อาสาฯ ถือมา
+                    • จำแนกกลุ่มด้วยวาจา/เขียนในใบ: ด่านหน้า (ไป St.4) / สนับสนุน (จบที่ St.3)
+                    • ⚠️ อาสาฯ ถือเอกสารติดตัวไปยังจุดถัดไป`
+                                    : `• วัดความดันโลหิต, น้ำหนัก, ส่วนสูง
+                    • เจ้าหน้าที่กรอกข้อมูลลงในเอกสารที่อาสาฯ ถือมา
+                    • ⚠️ อาสาฯ ถือเอกสารติดตัวไปพบแพทย์ (St.3)`
+                                }
+                                equipment={[
+                                `เครื่องวัดความดัน (Digital) ${bpMonitorCount} เครื่อง`,
+                                "เครื่องชั่งน้ำหนัก / ที่วัดส่วนสูง",
+                                "โต๊ะ/เก้าอี้ สำหรับเจ้าหน้าที่ซักประวัติ",
+                                "ปากกาสำหรับเจ้าหน้าที่ (เตรียมสำรอง)"
+                                ]}
+                            />
+
+                            <StationCard 
+                                number="3"
+                                title={planType === 'full' ? "ตรวจร่างกายโดยแพทย์ (รอบแรก & รอบสอง)" : "ตรวจร่างกายโดยแพทย์ (จุดสุดท้าย)"}
+                                personnel="เจ้าหน้าที่: แพทย์ 2 ท่าน"
+                                color="border-purple-600"
+                                icon={Stethoscope}
+                                description={planType === 'full' 
+                                    ? `• **รอบแรก (ก่อนทดสอบ):** ตรวจร่างกายประเมินความพร้อม
+                      - หากผ่าน: ไปทดสอบสมรรถภาพ (จุดที่ 4)
+                      - หากพบ **ภาวะอ้วน** / ความดันสูง / โรคเสี่ยง:
+                        👉 แพทย์ให้คำแนะนำ -> เก็บเอกสาร -> **จบภารกิจ (ไม่ให้ทำ Step Test)**
+                    
+                    • **รอบสอง (หลังทดสอบ):** อาสากลับมาจากจุดที่ 4 พร้อมผลทดสอบ
+                      - แพทย์แปลผล VO2Max และสรุปผลการตรวจ
+                      - แพทย์ลงความเห็นและ **เก็บรวบรวมเอกสารไว้ที่จุดนี้**`
+                                    : `• แพทย์รับเอกสารพิจารณาผลความดัน/ซักประวัติ
+                      • ตรวจร่างกาย (หัวใจ, ปอด)
+                      • แพทย์วินิจฉัย "ผ่าน/ไม่ผ่าน" ตามเกณฑ์สุขภาพ
+                      • แพทย์ให้คำแนะนำ -> **เก็บรวบรวมเอกสารไว้ที่จุดนี้** -> จบภารกิจ`
+                                }
+                                note={planType === 'full' ? "หากพบภาวะอ้วน งดส่ง Step Test ทันที" : "จุดนี้คือจุดสุดท้ายในการกรอกและเก็บเอกสาร (Drop-off point)"}
+                                equipment={[
+                                "โต๊ะตรวจแพทย์ 2 ชุด + เก้าอี้",
+                                `เครื่องวัดความดัน (สำรอง) ${bpMonitorBackup} เครื่อง`,
+                                "Stethoscope (หูฟังแพทย์) 2 ชุด",
+                                "ไฟฉาย / ไม้กดลิ้น / เจลล้างมือ",
+                                "สายวัดรอบเอว (ถ้ามี)",
+                                "กล่อง/ตะกร้า สำหรับเก็บเอกสารทั้งหมด (จบภารกิจ)"
+                                ]}
+                            />
+
+                            {planType === 'full' && (
+                                <StationCard 
+                                    number="4"
+                                    title="Chester Step Test (ทดสอบสมรรถภาพ)"
+                                    personnel="เจ้าหน้าที่: นวก./พว. (1:2)"
+                                    color="border-red-500"
+                                    icon={HeartPulse}
+                                    description={`• เฉพาะผู้ที่แพทย์อนุญาต (ผ่านการตรวจรอบแรกจากจุดที่ 3)
+                        • ทดสอบการก้าวขึ้น-ลงบันไดตามจังหวะ
+                        • เจ้าหน้าที่บันทึกผล -> **คืนเอกสารให้อาสาฯ**
+                        • ⚠️ **ให้กลับไปพบแพทย์ที่จุดที่ 3 อีกครั้ง** เพื่อสรุปผล`}
+                                    note={`ต้องนำเอกสารกลับไปส่งแพทย์ (จุดที่ 3) ห้ามนำกลับบ้าน`}
+                                    equipment={[
+                                    "Step Box (สูง 25 หรือ 30 ซม.): 3-5 กล่อง (สลับรอบ)",
+                                    "Chester Step Test Record Sheet (ใบบันทึกผล)",
+                                    "ปากกา & ไม้บรรทัด (สำหรับวาดกราฟ)",
+                                    "ชาร์ตแข็ง/คลิปบอร์ด (รองเขียน)",
+                                    "Metronome / ลำโพง / นาฬิกาจับเวลา (Stopwatch)",
+                                    "เครื่องวัดออกซิเจนปลายนิ้ว (+สำรอง & ที่ชาร์จแบต)",
+                                    "พัดลม / น้ำดื่ม / จุดปฐมพยาบาล"
+                                    ]}
+                                />
+                            )}
+                            </div>
+
+                            {/* Infographic Section */}
+                            <div className="bg-white rounded-xl shadow-xl p-6 md:p-10 my-10 border border-gray-200">
+                            <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center justify-center">
+                                <Activity className="mr-2 text-orange-600" /> แผนผังการเดินจุดตรวจ ({planType === 'full' ? 'แบบเต็ม' : 'แบบพื้นฐาน'})
+                            </h3>
+                            
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-start gap-4 md:gap-0 px-2 md:px-8">
+                                
+                                <InfographicStep 
+                                    icon={FileText} 
+                                    title="1. ลงทะเบียน" 
+                                    subtitle="รับเอกสาร + คัดกรองตนเอง"
+                                    color="bg-blue-500"
+                                    docAction="ถือเอกสาร"
+                                />
+
+                                <InfographicStep 
+                                    icon={Thermometer} 
+                                    title="2. วัดสัญญาณชีพ" 
+                                    subtitle="ความดัน/น้ำหนัก/ส่วนสูง"
+                                    color="bg-green-500"
+                                    docAction="ถือเอกสาร"
+                                />
+
+                                {planType === 'full' ? (
+                                    <>
+                                        <InfographicStep 
+                                            icon={Stethoscope} 
+                                            title="3. พบแพทย์ (รอบ 1)" 
+                                            subtitle="คัดกรอง (อ้วน/ความดัน)"
+                                            color="bg-purple-600"
+                                            note="*อ้วน -> ไม่ตรวจ Chester Step test"
+                                            docAction="ถือเอกสาร"
+                                        />
+
+                                        <InfographicStep 
+                                            icon={HeartPulse} 
+                                            title="4. Step Test" 
+                                            subtitle="ทดสอบ & บันทึกผล"
+                                            color="bg-red-500"
+                                            docAction="นำผลกลับไปจุดที่ 3"
+                                            returnAction={true}
+                                        />
+
+                                        <InfographicStep 
+                                            icon={Stethoscope} 
+                                            title="3. พบแพทย์ (รอบ 2)" 
+                                            subtitle="สรุปผล & ส่งเอกสาร"
+                                            color="bg-purple-600"
+                                            isLast={true}
+                                            docAction="คืนเอกสารที่หมอ"
+                                        />
+                                    </>
+                                ) : (
+                                    <InfographicStep 
+                                        icon={Stethoscope} 
+                                        title="3. พบแพทย์" 
+                                        subtitle="ตรวจร่างกาย & สรุปผล"
+                                        color="bg-purple-600"
+                                        isLast={true}
+                                        docAction="คืนเอกสารที่หมอ"
+                                    />
+                                )}
+
+                            </div>
+                            
+                            <div className="mt-8 bg-gray-50 p-4 rounded-lg border border-gray-200 text-center">
+                                <p className="text-sm text-gray-600">
+                                    <span className="font-bold text-orange-600">หมายเหตุ:</span> เอกสารทั้งหมดจะถูกรวบรวมไว้ที่ <strong>จุดที่ 3 (แพทย์)</strong> เป็นจุดสุดท้าย
+                                </p>
+                            </div>
+                            </div>
+
+                            {/* Summary Dashboard */}
+                            <div className="bg-gray-900 text-white rounded-xl shadow-xl p-6 md:p-8 mt-10">
+                            <h3 className="text-2xl font-bold mb-6 border-b border-gray-700 pb-4">
+                                สรุปภาพรวมทรัพยากร (สำหรับ {volunteerCount} คน)
+                            </h3>
+                            
+                            <div className={`grid grid-cols-1 ${planType === 'full' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4 md:gap-6`}>
+                                <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                                <h4 className="text-gray-400 text-xs font-semibold uppercase mb-2">เอกสารทั้งหมด</h4>
+                                <p className="text-3xl md:text-4xl font-bold text-blue-400">{volunteerCount}</p>
+                                <p className="text-xs text-gray-500 mt-1">ชุด (จุดที่ 1)</p>
+                                </div>
+
+                                <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                                <h4 className="text-gray-400 text-xs font-semibold uppercase mb-2">เข้าตรวจแพทย์</h4>
+                                <p className="text-3xl md:text-4xl font-bold text-purple-400">{volunteerCount}</p>
+                                <p className="text-xs text-gray-500 mt-1">คน {planType === 'full' ? '(จุดที่ 3 ไป-กลับ)' : '(จุดที่ 3)'}</p>
+                                </div>
+
+                                {planType === 'full' && (
+                                    <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                                    <h4 className="text-gray-400 text-xs font-semibold uppercase mb-2">เตรียม Step Test</h4>
+                                    <p className="text-3xl md:text-4xl font-bold text-red-400">100%</p>
+                                    <p className="text-xs text-gray-500 mt-1">เผื่อสูงสุด (จุดที่ 4)</p>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            <div className="mt-6 bg-gray-800/50 p-4 rounded-lg border border-gray-700 text-sm">
+                                <h4 className="font-bold text-gray-200 mb-2 flex items-center">
+                                    <CheckCircle className="w-4 h-4 mr-2 text-green-500" /> 
+                                    รายการอุปกรณ์สำคัญ
+                                </h4>
+                                <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-400">
+                                    <li>• เครื่องวัดความดันรวม (จุดที่ 2 + 3): <strong>{bpMonitorCount + bpMonitorBackup} เครื่อง</strong></li>
+                                    {planType === 'full' && <li>• Step Box (จุดที่ 4): <strong>3-5 กล่อง</strong></li>}
+                                    <li>• ภาชนะรวบรวมเอกสาร (จุดที่ 3): <strong>4-6 กล่อง (รวมท้ายสุด)</strong></li>
+                                </ul>
+                            </div>
+                            </div>
                         </div>
+                        )}
+
+                        {/* --- CONTENT: EQUIPMENT CHECKLIST --- */}
+                        {activeTab === 'equip' && (
+                        <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="text-center mb-8 pt-4">
+                                <h2 className="text-2xl font-bold text-gray-800">รายการอุปกรณ์ที่ต้องเตรียม (แบ่งตามฝ่าย)</h2>
+                                <p className="text-gray-600">รายการตรวจสอบสำหรับการเตรียมความพร้อมก่อนวันปฏิบัติงาน</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                
+                                {/* SSO Checklist */}
+                                <div className="bg-white rounded-xl shadow-md border-t-4 border-blue-500 overflow-hidden">
+                                    <div className="bg-blue-50 p-4 border-b border-blue-100 flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                        <Building2 className="text-blue-600" size={24} />
+                                        <h3 className="font-bold text-blue-900 text-lg">สสอ. สันทราย</h3>
+                                        </div>
+                                        <span className="text-xs font-semibold bg-blue-200 text-blue-800 px-2 py-1 rounded">ฝ่ายสถานที่ & ธุรการ</span>
+                                    </div>
+                                    <div className="p-6">
+                                        <ul className="space-y-4">
+                                            <li className="flex items-start">
+                                                <input type="checkbox" className="mt-1 w-5 h-5 text-blue-600 rounded mr-3" />
+                                                <div>
+                                                    <span className="font-bold text-gray-800 block">เอกสาร</span>
+                                                    <span className="text-sm text-gray-600">ใบลงทะเบียน, แบบคัดกรองสุขภาพ (จำนวน {volunteerCount} ชุด + สำรอง)</span>
+                                                </div>
+                                            </li>
+                                            <li className="flex items-start">
+                                                <input type="checkbox" className="mt-1 w-5 h-5 text-blue-600 rounded mr-3" />
+                                                <div>
+                                                    <span className="font-bold text-gray-800 block">สถานที่</span>
+                                                    <span className="text-sm text-gray-600">จัดผังเดินจุดตรวจ, ป้ายบอกทาง, ระบบไฟ, พัดลม</span>
+                                                </div>
+                                            </li>
+                                            <li className="flex items-start">
+                                                <input type="checkbox" className="mt-1 w-5 h-5 text-blue-600 rounded mr-3" />
+                                                <div>
+                                                    <span className="font-bold text-gray-800 block">เครื่องวัดความดัน (คัดกรอง)</span>
+                                                    <span className="text-sm text-gray-600">สำหรับจุดที่ 2 (คัดกรองสัญญาณชีพ) จำนวน 4 เครื่อง</span>
+                                                </div>
+                                            </li>
+                                            <li className="flex items-start">
+                                                <input type="checkbox" className="mt-1 w-5 h-5 text-blue-600 rounded mr-3" />
+                                                <div>
+                                                    <span className="font-bold text-gray-800 block">เครื่องชั่งน้ำหนัก / ที่วัดส่วนสูง</span>
+                                                    <span className="text-sm text-gray-600">สำหรับจุดที่ 2 (คัดกรองสัญญาณชีพ)</span>
+                                                </div>
+                                            </li>
+                                            <li className="flex items-start">
+                                                <input type="checkbox" className="mt-1 w-5 h-5 text-blue-600 rounded mr-3" />
+                                                <div>
+                                                    <span className="font-bold text-gray-800 block">โต๊ะ / เก้าอี้ / ปากกา</span>
+                                                    <span className="text-sm text-gray-600">สำหรับจุดลงทะเบียน และจุดคัดกรอง</span>
+                                                </div>
+                                            </li>
+                                            {planType === 'full' && (
+                                                <li className="flex items-start">
+                                                    <input type="checkbox" className="mt-1 w-5 h-5 text-blue-600 rounded mr-3" />
+                                                    <div>
+                                                        <span className="font-bold text-gray-800 block">ระบบเสียง</span>
+                                                        <span className="text-sm text-gray-600">ลำโพง, อุปกรณ์เชื่อมต่อมือถือ/โน้ตบุ๊ค (สำหรับ Step Test)</span>
+                                                    </div>
+                                                </li>
+                                            )}
+                                            
+                                            {/* Welfare section only for Full Plan */}
+                                            {planType === 'full' && (
+                                                <li className="flex items-start">
+                                                    <input type="checkbox" className="mt-1 w-5 h-5 text-blue-600 rounded mr-3" />
+                                                    <div>
+                                                        <span className="font-bold text-gray-800 block">สวัสดิการ</span>
+                                                        <span className="text-sm text-gray-600">น้ำดื่มสำหรับเจ้าหน้าที่และอาสาฯ, จุดปฐมพยาบาลเบื้องต้น</span>
+                                                    </div>
+                                                </li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                {/* Hospital Checklist */}
+                                <div className="bg-white rounded-xl shadow-md border-t-4 border-green-500 overflow-hidden">
+                                    <div className="bg-green-50 p-4 border-b border-green-100 flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                        <BriefcaseMedical className="text-green-600" size={24} />
+                                        <h3 className="font-bold text-green-900 text-lg">โรงพยาบาล</h3>
+                                        </div>
+                                        <span className="text-xs font-semibold bg-green-200 text-green-800 px-2 py-1 rounded">ทีมแพทย์ & เทคนิค</span>
+                                    </div>
+                                    <div className="p-6">
+                                        <ul className="space-y-4">
+                                            <li className="flex items-start">
+                                                <input type="checkbox" className="mt-1 w-5 h-5 text-green-600 rounded mr-3" />
+                                                <div>
+                                                    <span className="font-bold text-gray-800 block">หูฟังแพทย์</span>
+                                                    <span className="text-sm text-gray-600">จำนวน 2 ชุด (สำหรับแพทย์ประจำจุดที่ 3)</span>
+                                                </div>
+                                            </li>
+                                            <li className="flex items-start">
+                                                <input type="checkbox" className="mt-1 w-5 h-5 text-green-600 rounded mr-3" />
+                                                <div>
+                                                    <span className="font-bold text-gray-800 block">เครื่องวัดความดัน (แพทย์/สำรอง)</span>
+                                                    <span className="text-sm text-gray-600">จำนวน 2 เครื่อง (สำหรับจุดแพทย์ใช้ทวนสอบ)</span>
+                                                </div>
+                                            </li>
+                                            {planType === 'full' && (
+                                                <>
+                                                    <li className="flex items-start">
+                                                        <input type="checkbox" className="mt-1 w-5 h-5 text-green-600 rounded mr-3" />
+                                                        <div>
+                                                            <span className="font-bold text-gray-800 block">Step Box (อุปกรณ์ทดสอบ)</span>
+                                                            <span className="text-sm text-gray-600">ความสูง 25/30 ซม. จำนวน 3-5 กล่อง</span>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start">
+                                                        <input type="checkbox" className="mt-1 w-5 h-5 text-green-600 rounded mr-3" />
+                                                        <div>
+                                                            <span className="font-bold text-gray-800 block">อุปกรณ์บันทึกผล (St.4)</span>
+                                                            <span className="text-sm text-gray-600">ชาร์ตแข็ง/คลิปบอร์ด, ปากกา, ไม้บรรทัด, ใบ Record Sheet</span>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start">
+                                                        <input type="checkbox" className="mt-1 w-5 h-5 text-green-600 rounded mr-3" />
+                                                        <div>
+                                                            <span className="font-bold text-gray-800 block">อุปกรณ์วัดชีพจร (St.4)</span>
+                                                            <span className="text-sm text-gray-600">เครื่องวัดออกซิเจนปลายนิ้ว + ถ่านสำรอง/ที่ชาร์จ</span>
+                                                        </div>
+                                                    </li>
+                                                    <li className="flex items-start">
+                                                        <input type="checkbox" className="mt-1 w-5 h-5 text-green-600 rounded mr-3" />
+                                                        <div>
+                                                            <span className="font-bold text-gray-800 block">นาฬิกาจับเวลา (St.4)</span>
+                                                            <span className="text-sm text-gray-600">Stopwatch สำหรับจับเวลาแต่ละ Stage</span>
+                                                        </div>
+                                                    </li>
+                                                </>
+                                            )}
+                                            <li className="flex items-start">
+                                                <input type="checkbox" className="mt-1 w-5 h-5 text-green-600 rounded mr-3" />
+                                                <div>
+                                                    <span className="font-bold text-gray-800 block">อุปกรณ์ตรวจทั่วไป</span>
+                                                    <span className="text-sm text-gray-600">ไฟฉาย, ไม้กดลิ้น, สายวัดรอบเอว (ถ้ามี)</span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        )}
+
+                        {/* --- CONTENT: CRITERIA --- */}
+                        {activeTab === 'criteria' && (
+                        <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="bg-purple-50 border border-purple-200 rounded-xl p-6 mb-8 mt-4 text-center">
+                                <h2 className="text-2xl font-bold text-purple-800 flex justify-center items-center gap-2">
+                                <FileSearch /> เกณฑ์การแปลผลทางการแพทย์
+                                </h2>
+                                <p className="text-purple-700 font-medium">มาตรฐานสำหรับแพทย์ในการวินิจฉัยความพร้อม</p>
+                            </div>
+
+                            <div className="space-y-8">
+                            
+                            {/* 1. Blood Pressure Criteria */}
+                            <div className="bg-white rounded-xl shadow-md border-t-4 border-red-500 overflow-hidden">
+                                <div className="p-6">
+                                    <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                        <HeartPulse className="mr-2 text-red-500" /> 1. เกณฑ์ความดันโลหิต (Blood Pressure)
+                                    </h3>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm text-left border-collapse">
+                                        <thead className="bg-gray-100 text-gray-700">
+                                            <tr>
+                                                <th className="px-4 py-2 border">ระดับ</th>
+                                                <th className="px-4 py-2 border">ตัวบน (Systolic)</th>
+                                                <th className="px-4 py-2 border">ตัวล่าง (Diastolic)</th>
+                                                <th className="px-4 py-2 border">คำแนะนำแพทย์</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr className="bg-green-50">
+                                                <td className="px-4 py-2 border font-bold text-green-700">ปกติ</td>
+                                                <td className="px-4 py-2 border">&lt; 120</td>
+                                                <td className="px-4 py-2 border">&lt; 80</td>
+                                                <td className="px-4 py-2 border">ผ่าน (Fit)</td>
+                                            </tr>
+                                            <tr className="bg-yellow-50">
+                                                <td className="px-4 py-2 border font-bold text-yellow-700">เฝ้าระวัง</td>
+                                                <td className="px-4 py-2 border">120 - 139</td>
+                                                <td className="px-4 py-2 border">80 - 89</td>
+                                                <td className="px-4 py-2 border">ให้คำแนะนำ, อนุญาตให้ทดสอบได้</td>
+                                            </tr>
+                                            <tr className="bg-orange-50">
+                                                <td className="px-4 py-2 border font-bold text-orange-700">สูงระดับ 1</td>
+                                                <td className="px-4 py-2 border">140 - 159</td>
+                                                <td className="px-4 py-2 border">90 - 99</td>
+                                                <td className="px-4 py-2 border">พิจารณาซ้ำ, อาจงด Step Test หากมีความเสี่ยงอื่น</td>
+                                            </tr>
+                                            <tr className="bg-red-50">
+                                                <td className="px-4 py-2 border font-bold text-red-700">สูงระดับ 2</td>
+                                                <td className="px-4 py-2 border">≥ 160</td>
+                                                <td className="px-4 py-2 border">≥ 100</td>
+                                                <td className="px-4 py-2 border text-red-600 font-bold">ไม่ผ่าน (งดภารกิจด่านหน้า)</td>
+                                            </tr>
+                                        </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                                {/* 2. BMI Criteria */}
+                            <div className="bg-white rounded-xl shadow-md border-t-4 border-orange-500 overflow-hidden">
+                                <div className="p-6">
+                                    <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                        <Weight className="mr-2 text-orange-500" /> 2. เกณฑ์ดัชนีมวลกาย (BMI)
+                                    </h3>
+                                    <p className="text-sm text-gray-600 mb-4">เกณฑ์สำหรับชาวเอเชีย</p>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm text-left border-collapse">
+                                        <thead className="bg-gray-100 text-gray-700">
+                                            <tr>
+                                                <th className="px-4 py-2 border">แปลผล</th>
+                                                <th className="px-4 py-2 border">BMI (kg/m²)</th>
+                                                <th className="px-4 py-2 border">ความเสี่ยงโรค</th>
+                                                <th className="px-4 py-2 border">การพิจารณา</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr className="bg-green-50">
+                                                <td className="px-4 py-2 border text-green-700">ปกติ</td>
+                                                <td className="px-4 py-2 border">18.5 - 22.9</td>
+                                                <td className="px-4 py-2 border">ปกติ</td>
+                                                <td className="px-4 py-2 border">ผ่าน (Fit)</td>
+                                            </tr>
+                                            <tr className="bg-yellow-50">
+                                                <td className="px-4 py-2 border text-yellow-700">ท้วม / โรคอ้วนระดับ 1</td>
+                                                <td className="px-4 py-2 border">23.0 - 24.9</td>
+                                                <td className="px-4 py-2 border">เพิ่มขึ้น</td>
+                                                <td className="px-4 py-2 border">พิจารณาร่วมกับความดัน</td>
+                                            </tr>
+                                            <tr className="bg-orange-50">
+                                                <td className="px-4 py-2 border font-bold text-orange-700">โรคอ้วนระดับ 2</td>
+                                                <td className="px-4 py-2 border">25.0 - 29.9</td>
+                                                <td className="px-4 py-2 border">อันตราย</td>
+                                                <td className="px-4 py-2 border">ควรระวัง, แพทย์พิจารณาความพร้อม</td>
+                                            </tr>
+                                            <tr className="bg-red-50">
+                                                <td className="px-4 py-2 border font-bold text-red-700">โรคอ้วนอันตราย</td>
+                                                <td className="px-4 py-2 border">≥ 30.0</td>
+                                                <td className="px-4 py-2 border">อันตรายมาก</td>
+                                                <td className="px-4 py-2 border font-bold text-red-600">งด Step Test / ไม่เหมาะสมด่านหน้า</td>
+                                            </tr>
+                                        </tbody>
+                                        </table>
+                                    </div>
+                                    <div className="mt-4 bg-orange-50 border border-orange-200 text-orange-800 text-sm p-3 rounded">
+                                        <strong>ข้อควรระวัง:</strong> ผู้ที่มีภาวะอ้วน (BMI ≥ 30 หรือตามวิจารณญาณแพทย์) มีความเสี่ยงสูงในการเกิดอุบัติเหตุหรือปัญหาสุขภาพขณะดับไฟป่าบนพื้นที่ลาดชัน <strong>จึงควรงดการทดสอบสมรรถภาพทางกาย (Step Test)</strong> และจัดให้อยู่ในกลุ่มสนับสนุนหรือกลุ่มเสี่ยง
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 3. VO2 Max Criteria */}
+                            {planType === 'full' && (
+                                <div className="bg-white rounded-xl shadow-md border-t-4 border-blue-500 overflow-hidden">
+                                    <div className="p-6">
+                                        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                            <Activity className="mr-2 text-blue-500" /> 3. เกณฑ์สมรรถภาพแอโรบิก (VO2 Max)
+                                        </h3>
+                                        <p className="text-sm text-gray-600 mb-2">หน่วย: ml/kg/min | อ้างอิงมาตรฐาน Chester Step Test</p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {/* Male Table */}
+                                            <div className="border rounded-lg p-3">
+                                            <h4 className="font-bold text-center bg-blue-100 text-blue-800 py-1 mb-2 rounded">เพศชาย (Male)</h4>
+                                            <table className="w-full text-xs">
+                                                <thead>
+                                                    <tr className="border-b">
+                                                        <th className="py-1">อายุ</th>
+                                                        <th className="py-1 text-red-600">แย่ (Poor)</th>
+                                                        <th className="py-1 text-yellow-600">ปานกลาง</th>
+                                                        <th className="py-1 text-green-600">ดีขึ้นไป</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y text-center">
+                                                    <tr><td>15-19</td><td>&lt; 45</td><td>45-50</td><td>&gt; 50</td></tr>
+                                                    <tr><td>20-29</td><td>&lt; 35</td><td>35-43</td><td>&gt; 43</td></tr>
+                                                    <tr><td>30-39</td><td>&lt; 33</td><td>33-39</td><td>&gt; 39</td></tr>
+                                                    <tr><td>40-49</td><td>&lt; 30</td><td>30-36</td><td>&gt; 36</td></tr>
+                                                    <tr><td>50-59</td><td>&lt; 25</td><td>25-33</td><td>&gt; 33</td></tr>
+                                                    <tr><td>60+</td><td>&lt; 20</td><td>20-30</td><td>&gt; 30</td></tr>
+                                                </tbody>
+                                            </table>
+                                            </div>
+                                            {/* Female Table */}
+                                            <div className="border rounded-lg p-3">
+                                            <h4 className="font-bold text-center bg-pink-100 text-pink-800 py-1 mb-2 rounded">เพศหญิง (Female)</h4>
+                                            <table className="w-full text-xs">
+                                                <thead>
+                                                    <tr className="border-b">
+                                                        <th className="py-1">อายุ</th>
+                                                        <th className="py-1 text-red-600">แย่ (Poor)</th>
+                                                        <th className="py-1 text-yellow-600">ปานกลาง</th>
+                                                        <th className="py-1 text-green-600">ดีขึ้นไป</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y text-center">
+                                                    <tr><td>15-19</td><td>&lt; 35</td><td>35-40</td><td>&gt; 40</td></tr>
+                                                    <tr><td>20-29</td><td>&lt; 29</td><td>29-35</td><td>&gt; 35</td></tr>
+                                                    <tr><td>30-39</td><td>&lt; 27</td><td>27-33</td><td>&gt; 33</td></tr>
+                                                    <tr><td>40-49</td><td>&lt; 25</td><td>25-31</td><td>&gt; 31</td></tr>
+                                                    <tr><td>50-59</td><td>&lt; 21</td><td>21-29</td><td>&gt; 29</td></tr>
+                                                    <tr><td>60+</td><td>&lt; 17</td><td>17-26</td><td>&gt; 26</td></tr>
+                                                </tbody>
+                                            </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* 4. Final Decision Matrix */}
+                            <div className="bg-white rounded-xl shadow-md border-t-4 border-green-600 overflow-hidden">
+                                <div className="p-6">
+                                    <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                        <Scale className="mr-2 text-green-600" /> {planType === 'full' ? '4' : '3'}. สรุปผลการปฏิบัติงาน
+                                    </h3>
+                                    <div className="grid gap-4 md:grid-cols-3">
+                                        {/* Frontline */}
+                                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <CheckCircle className="text-green-600" size={20} />
+                                            <h4 className="font-bold text-green-800">กลุ่มด่านหน้า (Frontline)</h4>
+                                        </div>
+                                        <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                                            <li>ความดันโลหิตปกติ หรือสูงเล็กน้อย (ควบคุมได้)</li>
+                                            {planType === 'full' && <li>VO2 Max ระดับ <strong>ปานกลางขึ้นไป</strong></li>}
+                                            <li>ไม่มีโรคประจำตัวที่เป็นความเสี่ยง</li>
+                                            <li>BMI อยู่ในเกณฑ์ปกติ-ท้วม (ไม่ถึงอ้วนมาก)</li>
+                                        </ul>
+                                        </div>
+
+                                        {/* Support */}
+                                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Info className="text-yellow-600" size={20} />
+                                            <h4 className="font-bold text-yellow-800">กลุ่มสนับสนุน (Support)</h4>
+                                        </div>
+                                        <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                                            {planType === 'full' && <li>VO2 Max ระดับ <strong>ต่ำ (Poor)</strong> หรือไม่ได้ทดสอบ</li>}
+                                            <li>ความดันโลหิตสูงเล็กน้อย (แต่ไม่มีอาการ)</li>
+                                            <li>มีโรคประจำตัวแต่ควบคุมได้</li>
+                                            <li>อายุมาก หรือสภาพร่างกายไม่พร้อมลุยไฟ</li>
+                                        </ul>
+                                        </div>
+
+                                        {/* Unfit */}
+                                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <StopCircle className="text-red-600" size={20} />
+                                            <h4 className="font-bold text-red-800">ไม่ผ่าน (Unfit)</h4>
+                                        </div>
+                                        <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                                            <li>ความดันโลหิต ≥ 160/100 mmHg</li>
+                                            <li><strong>ภาวะอ้วน (Obesity) / BMI เกินเกณฑ์</strong></li>
+                                            <li>มีอาการเจ็บหน้าอก/หอบเหนื่อยรุนแรง</li>
+                                            <li>โรคหัวใจ/หอบหืดกำเริบ</li>
+                                            <li>สภาพร่างกายเสี่ยงอันตรายต่อตนเอง</li>
+                                        </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            </div>
+                        </div>
+                        )}
+                    </div>
 
                     </div>
-                  </div>
-                )}
-              </div>
+                );
+            }
 
-            </div>
-          );
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(<WildfireHealthCheckPlan />);
+        } catch (e) {
+            console.error("React Error:", e);
+            document.getElementById('loading').style.display = 'none';
+            const errorBox = document.getElementById('error-display');
+            errorBox.style.display = 'block';
+            errorBox.innerHTML = '<strong>Critical Error:</strong><br>' + e.message;
         }
-
-        const root = createRoot(document.getElementById('root'));
-        root.render(<WildfireHealthCheckPlan />);
     </script>
 </body>
 </html>
