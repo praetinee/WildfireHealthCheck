@@ -170,6 +170,18 @@
                 const bpMonitorCount = 4;
                 const bpMonitorBackup = 2;
 
+                // --- Documents Data ---
+                const documents = [
+                    { title: "เบอร์ติดต่อผู้รับผิดชอบงาน ความมั่นคง (จ.เชียงใหม่)", type: "Image", url: "https://drive.google.com/file/d/1hCiaiv2Q_NAPFH8iGpvU0Gq3J9iuiYg5/view?usp=drive_link" },
+                    { title: "รายชื่อ อปท. เชียงใหม่ 211 แห่ง / อบต. 89 แห่ง", type: "PDF", url: "https://drive.google.com/file/d/1-5ATSt-38mwHP3ORsVxrZHXwmnwQGdaC/view?usp=drive_link" },
+                    { title: "คู่มือ Chester Step Test (ฉบับสมบูรณ์)", type: "PDF", url: "https://drive.google.com/file/d/1GqzodASnDnkgMkYpg2o6s5r2F_muTf35/view?usp=drive_link" },
+                    { title: "แบบคัดกรองสุขภาพด้วยตนเอง (ใบที่ 1)", type: "PDF", url: "https://drive.google.com/file/d/16MUh8P7SyMLP3-hJJj_FX3ICyfeHIv34/view?usp=drive_link" },
+                    { title: "แบบคัดกรองโดยเจ้าหน้าที่ (ใบที่ 2)", type: "PDF", url: "https://drive.google.com/file/d/1IZJTlZ0QZnI0jyKVCR-7wx-P4b4vXH9v/view?usp=drive_link" },
+                    { title: "กำหนดการอบรม ปรับกิจกรรม (มกราคม 2569)", type: "PDF", url: "https://drive.google.com/file/d/1kX6a0xDzBDqQCpUUvRL8f2cGNEUyVY9Y/view?usp=drive_link" },
+                    { title: "สรุปยอดเจ้าหน้าที่และอาสาสมัคร 2569", type: "PDF", url: "https://drive.google.com/file/d/1U_Nx6Eg-Wm15zAdJX3TzlfpiH9RnL9yK/view?usp=drive_link" },
+                    { title: "สไลด์บรรยาย นพ.ปัณณวิชญ์ (การคัดกรอง)", type: "PDF", url: "https://drive.google.com/file/d/1c9TyMMfetwMKb1eiSN7rFJxDmJBYp1LV/view?usp=drive_link" },
+                ];
+
                 // --- Components ---
                 const StationCard = ({ number, title, personnel, description, equipment, color, icon: Icon, note }) => (
                     <div className={`bg-white rounded-xl shadow-md overflow-hidden border-t-4 ${color} mb-6`}>
@@ -388,6 +400,19 @@
                                 <FileSearch size={18} className={activeTab === 'criteria' ? 'text-orange-600' : ''} /> 
                                 <span className="hidden md:inline">เกณฑ์การแปลผล</span>
                                 <span className="md:hidden">เกณฑ์หมอ</span>
+                                </button>
+
+                                <button
+                                onClick={() => setActiveTab('docs')}
+                                className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${
+                                    activeTab === 'docs' 
+                                    ? 'bg-white text-orange-800 shadow-lg scale-100' 
+                                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                                }`}
+                                >
+                                <FileText size={18} className={activeTab === 'docs' ? 'text-orange-600' : ''} /> 
+                                <span className="hidden md:inline">เอกสารไฟป่า</span>
+                                <span className="md:hidden">เอกสาร</span>
                                 </button>
                             </div>
                         </div>
@@ -1269,6 +1294,51 @@
                                     </div>
                                 </div>
 
+                            </div>
+                        </div>
+                        )}
+
+                        {/* --- CONTENT: DOCUMENTS TAB --- */}
+                        {activeTab === 'docs' && (
+                        <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="bg-orange-50 border border-orange-200 rounded-xl p-6 mb-8 mt-4 text-center">
+                                <h2 className="text-2xl font-bold text-orange-800 flex justify-center items-center gap-2">
+                                <FileText /> เอกสารไฟป่าและคู่มือที่เกี่ยวข้อง
+                                </h2>
+                                <p className="text-orange-700 font-medium">ดาวน์โหลดหรือเปิดดูเอกสารประกอบการดำเนินงาน</p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {documents.map((doc, index) => (
+                                    <a 
+                                        key={index} 
+                                        href={doc.url} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-orange-300 transition-all flex items-start group"
+                                    >
+                                        <div className="p-3 bg-gray-100 rounded-lg text-gray-500 group-hover:bg-orange-100 group-hover:text-orange-600 transition-colors mr-4">
+                                            <FileText size={24} />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-gray-800 group-hover:text-orange-700 transition-colors mb-1 line-clamp-2">
+                                                {doc.title}
+                                            </h4>
+                                            <div className="flex items-center text-xs text-gray-500">
+                                                <span className="bg-gray-100 px-2 py-0.5 rounded mr-2 border border-gray-200">{doc.type}</span>
+                                                <span className="flex items-center">
+                                                    เปิดดูเอกสาร <ArrowRight size={12} className="ml-1" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                ))}
+                            </div>
+                            
+                            <div className="mt-8 text-center">
+                                <p className="text-sm text-gray-500">
+                                    เอกสารทั้งหมดถูกจัดเก็บใน Google Drive | กรุณาเชื่อมต่ออินเทอร์เน็ตเพื่อเปิดดู
+                                </p>
                             </div>
                         </div>
                         )}
