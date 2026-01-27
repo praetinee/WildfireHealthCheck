@@ -999,13 +999,13 @@
                                                 <td className="px-4 py-2 border font-bold text-yellow-700">เฝ้าระวัง</td>
                                                 <td className="px-4 py-2 border">120 - 139</td>
                                                 <td className="px-4 py-2 border">80 - 89</td>
-                                                <td className="px-4 py-2 border">ให้คำแนะนำ, อนุญาตให้ทดสอบได้</td>
+                                                <td className="px-4 py-2 border">{planType === 'full' ? 'ให้คำแนะนำ, อนุญาตให้ทดสอบได้' : 'ให้คำแนะนำ, ผ่านเกณฑ์เบื้องต้น'}</td>
                                             </tr>
                                             <tr className="bg-orange-50">
                                                 <td className="px-4 py-2 border font-bold text-orange-700">สูงระดับ 1</td>
                                                 <td className="px-4 py-2 border">140 - 159</td>
                                                 <td className="px-4 py-2 border">90 - 99</td>
-                                                <td className="px-4 py-2 border">พิจารณาซ้ำ, อาจงด Step Test หากมีความเสี่ยงอื่น</td>
+                                                <td className="px-4 py-2 border">{planType === 'full' ? 'พิจารณาซ้ำ, อาจงด Step Test หากมีความเสี่ยงอื่น' : 'แพทย์วินิจฉัยความพร้อม (อาจเป็นกลุ่มสนับสนุน)'}</td>
                                             </tr>
                                             <tr className="bg-red-50">
                                                 <td className="px-4 py-2 border font-bold text-red-700">สูงระดับ 2</td>
@@ -1059,13 +1059,18 @@
                                                 <td className="px-4 py-2 border font-bold text-red-700">โรคอ้วนอันตราย</td>
                                                 <td className="px-4 py-2 border">≥ 30.0</td>
                                                 <td className="px-4 py-2 border">อันตรายมาก</td>
-                                                <td className="px-4 py-2 border font-bold text-red-600">งด Step Test / ไม่เหมาะสมด่านหน้า</td>
+                                                <td className="px-4 py-2 border font-bold text-red-600">
+                                                    {planType === 'full' ? 'งด Step Test / ไม่เหมาะสมด่านหน้า' : 'ไม่เหมาะสมด่านหน้า / กลุ่มเสี่ยง'}
+                                                </td>
                                             </tr>
                                         </tbody>
                                         </table>
                                     </div>
                                     <div className="mt-4 bg-orange-50 border border-orange-200 text-orange-800 text-sm p-3 rounded">
-                                        <strong>ข้อควรระวัง:</strong> ผู้ที่มีภาวะอ้วน (BMI ≥ 30 หรือตามวิจารณญาณแพทย์) มีความเสี่ยงสูงในการเกิดอุบัติเหตุหรือปัญหาสุขภาพขณะดับไฟป่าบนพื้นที่ลาดชัน <strong>จึงควรงดการทดสอบสมรรถภาพทางกาย (Step Test)</strong> และจัดให้อยู่ในกลุ่มสนับสนุนหรือกลุ่มเสี่ยง
+                                        <strong>ข้อควรระวัง:</strong> ผู้ที่มีภาวะอ้วน (BMI ≥ 30 หรือตามวิจารณญาณแพทย์) มีความเสี่ยงสูงในการเกิดอุบัติเหตุหรือปัญหาสุขภาพขณะดับไฟป่าบนพื้นที่ลาดชัน 
+                                        {planType === 'full' 
+                                            ? ' จึงควรงดการทดสอบสมรรถภาพทางกาย (Step Test) และจัดให้อยู่ในกลุ่มสนับสนุนหรือกลุ่มเสี่ยง' 
+                                            : ' จึงจัดให้อยู่ในกลุ่มสนับสนุนหรือกลุ่มเสี่ยง (ไม่เหมาะสมกับภารกิจด่านหน้า)'}
                                     </div>
                                 </div>
                             </div>
