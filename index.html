@@ -14,7 +14,10 @@
         body { font-family: 'Sarabun', sans-serif !important; }
     </style>
 
-    <!-- Import React & ReactDOM & Babel for in-browser compilation -->
+    <!-- Import Babel for JSX compilation in browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Import React & ReactDOM & Lucide -->
     <script type="importmap">
     {
         "imports": {
@@ -24,13 +27,12 @@
         }
     }
     </script>
-    <!-- Polyfill for module support in some browsers -->
-    <script async src="https://ga.jspm.io/npm:es-module-shims@1.5.17/dist/es-module-shims.js"></script>
 </head>
 <body class="bg-slate-50">
     <div id="root"></div>
 
-    <script type="module">
+    <!-- Note: type="text/babel" is crucial for JSX support in browser without build step -->
+    <script type="text/babel" data-type="module">
         import React, { useState } from 'react';
         import { createRoot } from 'react-dom/client';
         import { 
@@ -643,7 +645,7 @@
                                                     <input type="checkbox" className="mt-1 w-5 h-5 text-green-600 rounded mr-3" />
                                                     <div>
                                                         <span className="font-bold text-gray-800 block">Step Box (อุปกรณ์ทดสอบ)</span>
-                                                        <span className="text-sm text-gray-600">ความสูง 25/30 ซม. จำนวน 3-5 กล่อง</span>
+                                                        <span className="text-sm text-gray-600">ความสูง 25 หรือ 30 ซม. จำนวน 3-5 กล่อง</span>
                                                     </div>
                                                 </li>
                                                 <li className="flex items-start">
