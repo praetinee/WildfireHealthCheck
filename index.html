@@ -33,13 +33,13 @@
     <!-- 4. Babel Standalone -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- 5. Import Map (FIXED: Added ?bundle to ensure exports work) -->
+    <!-- 5. Import Map (STABLE FIX: Force same React version) -->
     <script type="importmap">
     {
         "imports": {
-            "react": "https://esm.sh/react@18.2.0?bundle",
-            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client?bundle",
-            "lucide-react": "https://esm.sh/lucide-react@0.344.0?bundle"
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "lucide-react": "https://esm.sh/lucide-react@0.344.0?deps=react@18.2.0"
         }
     }
     </script>
@@ -78,15 +78,13 @@
     <script type="text/babel" data-type="module">
         import React, { useState } from 'react';
         import { createRoot } from 'react-dom/client';
-        // REPLACED BriefcaseMedical with Stethoscope to avoid import errors
-        // REPLACED CalendarClock with Timer
-        // REPLACED PackageCheck with ClipboardList
         import { 
             ClipboardList, Activity, Thermometer, FileText, CheckCircle, Calculator, 
             HeartPulse, Stethoscope, ScanLine, UserPlus, PenTool, ArrowRight, 
             ArrowDown, Users, FileCheck, Info, AlertCircle, Shirt, Moon, Coffee, 
             CreditCard, Pill, Timer, StopCircle, BarChart3, ClipboardCheck, 
-            RotateCcw, Building2, FileSearch, Scale, Weight, PlayCircle, Send, LayoutTemplate 
+            RotateCcw, Building2, BriefcaseMedical, CalendarClock, PackageCheck, 
+            FileSearch, Scale, Weight, PlayCircle, Send, LayoutTemplate 
         } from 'lucide-react';
 
         function WildfireHealthCheckPlan() {
@@ -348,7 +346,7 @@
                                         <div className="p-6">
                                             <ul className="space-y-4">
                                                 <li className="flex gap-2"><input type="checkbox" className="w-5 h-5" /> <div><span className="font-bold block">หูฟังแพทย์ (Stethoscope)</span><span>2 ชุด</span></div></li>
-                                                <li className="flex gap-2"><input type="checkbox" className="w-5 h-5" /> <div><span className="font-bold block">เครื่องวัดความดัน (แพทย์)</span><span>2 เครื่อง</span></div></li>
+                                                <li className="flex gap-2"><input type="checkbox" className="w-5 h-5" /> <div><span className="font-bold block">เครื่องวัดความดัน (แพทย์/สำรอง)</span><span>2 เครื่อง</span></div></li>
                                                 {planType === 'full' && (
                                                     <>
                                                         <li className="flex gap-2"><input type="checkbox" className="w-5 h-5" /> <div><span className="font-bold block">Step Box</span><span>สูง 25/30 ซม. (3-5 กล่อง)</span></div></li>
