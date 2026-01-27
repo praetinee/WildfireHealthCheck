@@ -33,13 +33,13 @@
     <!-- 4. Babel Standalone -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- 5. Import Map (เชื่อมโยงไลบรารี) -->
+    <!-- 5. Import Map (FIXED: Added ?bundle to ensure exports work) -->
     <script type="importmap">
     {
         "imports": {
-            "react": "https://esm.sh/react@18.2.0",
-            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-            "lucide-react": "https://esm.sh/lucide-react@0.344.0"
+            "react": "https://esm.sh/react@18.2.0?bundle",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client?bundle",
+            "lucide-react": "https://esm.sh/lucide-react@0.344.0?bundle"
         }
     }
     </script>
@@ -78,13 +78,15 @@
     <script type="text/babel" data-type="module">
         import React, { useState } from 'react';
         import { createRoot } from 'react-dom/client';
+        // REPLACED BriefcaseMedical with Stethoscope to avoid import errors
+        // REPLACED CalendarClock with Timer
+        // REPLACED PackageCheck with ClipboardList
         import { 
             ClipboardList, Activity, Thermometer, FileText, CheckCircle, Calculator, 
             HeartPulse, Stethoscope, ScanLine, UserPlus, PenTool, ArrowRight, 
             ArrowDown, Users, FileCheck, Info, AlertCircle, Shirt, Moon, Coffee, 
             CreditCard, Pill, Timer, StopCircle, BarChart3, ClipboardCheck, 
-            RotateCcw, Building2, BriefcaseMedical, CalendarClock, PackageCheck, 
-            FileSearch, Scale, Weight, PlayCircle, Send, LayoutTemplate 
+            RotateCcw, Building2, FileSearch, Scale, Weight, PlayCircle, Send, LayoutTemplate 
         } from 'lucide-react';
 
         function WildfireHealthCheckPlan() {
@@ -235,7 +237,7 @@
                                         แผนตรวจสุขภาพอาสาดับไฟป่า 2569
                                     </h1>
                                     <div className="mt-3 inline-flex items-center bg-black/20 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-sm font-medium text-orange-50">
-                                        <CalendarClock className="w-4 h-4 mr-2 text-yellow-300" />
+                                        <Timer className="w-4 h-4 mr-2 text-yellow-300" />
                                         <span>2 ก.พ. 2569</span>
                                         <span className="mx-2 opacity-50">|</span>
                                         <span>เริ่มเวลา 08:30 น.</span>
@@ -251,7 +253,7 @@
                                         <Calculator size={18} className={activeTab === 'plan' ? 'text-orange-600' : ''} /> <span className="hidden md:inline">แผนงาน & ทรัพยากร</span><span className="md:hidden">แผนงาน</span>
                                     </button>
                                     <button onClick={() => setActiveTab('equip')} className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${activeTab === 'equip' ? 'bg-white text-orange-800 shadow-lg scale-100' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
-                                        <PackageCheck size={18} className={activeTab === 'equip' ? 'text-orange-600' : ''} /> <span className="hidden md:inline">อุปกรณ์ (แยกฝ่าย)</span><span className="md:hidden">อุปกรณ์</span>
+                                        <ClipboardList size={18} className={activeTab === 'equip' ? 'text-orange-600' : ''} /> <span className="hidden md:inline">อุปกรณ์ (แยกฝ่าย)</span><span className="md:hidden">อุปกรณ์</span>
                                     </button>
                                     <button onClick={() => setActiveTab('prep')} className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center gap-2 whitespace-nowrap ${activeTab === 'prep' ? 'bg-white text-orange-800 shadow-lg scale-100' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}>
                                         <Info size={18} className={activeTab === 'prep' ? 'text-orange-600' : ''} /> <span className="hidden md:inline">การเตรียมตัว (อาสาฯ)</span><span className="md:hidden">เตรียมตัว</span>
@@ -342,7 +344,7 @@
                                         </div>
                                     </div>
                                     <div className="bg-white rounded-xl shadow-md border-t-4 border-green-500 overflow-hidden">
-                                        <div className="bg-green-50 p-4 border-b border-green-100 flex justify-between"><div className="flex gap-2"><BriefcaseMedical className="text-green-600" /> <h3 className="font-bold text-green-900">โรงพยาบาล</h3></div></div>
+                                        <div className="bg-green-50 p-4 border-b border-green-100 flex justify-between"><div className="flex gap-2"><Stethoscope className="text-green-600" /> <h3 className="font-bold text-green-900">โรงพยาบาล</h3></div></div>
                                         <div className="p-6">
                                             <ul className="space-y-4">
                                                 <li className="flex gap-2"><input type="checkbox" className="w-5 h-5" /> <div><span className="font-bold block">หูฟังแพทย์ (Stethoscope)</span><span>2 ชุด</span></div></li>
