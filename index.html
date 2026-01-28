@@ -64,14 +64,13 @@
 
     <script type="text/babel">
         try {
-            // Check Dependencies (Lucide ไม่ต้องเช็คแล้วเพราะฝังโค้ดไว้ข้างใน)
+            // Check Dependencies
             if (!window.React) throw new Error("โหลด React ไม่สำเร็จ (Server อาจมีปัญหา)");
             if (!window.ReactDOM) throw new Error("โหลด ReactDOM ไม่สำเร็จ");
 
             const { useState, useEffect } = React;
 
-            // --- EMBEDDED ICONS (ฝังโค้ดไอคอนเพื่อแก้ปัญหาโหลดไม่สำเร็จ) ---
-            // Helper function to create SVG icons
+            // --- EMBEDDED ICONS ---
             const createIcon = (paths) => ({ size = 24, className = "", color = "currentColor", ...props }) => (
                 <svg 
                     xmlns="http://www.w3.org/2000/svg" 
@@ -91,7 +90,7 @@
                 </svg>
             );
 
-            // Icon Definitions (SVG Paths)
+            // Icon Definitions
             const LucideIcons = {
                 Activity: createIcon(["M22 12h-4l-3 9L9 3l-3 9H2"]),
                 AlertCircle: ({ size=24, color="currentColor", className="" }) => (
@@ -146,7 +145,7 @@
                 Weight: createIcon(["M13.5 22H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4", "M6 5 2 9", "M18 5l4 4", "M18.5 22a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"])
             };
             
-            // ใช้ตัวแปรนี้แทน lucideReact ที่โหลดจาก CDN
+            // ใช้ตัวแปรนี้แทน lucideReact
             const { 
                 ClipboardList, Activity, Thermometer, FileText, CheckCircle, Calculator, 
                 HeartPulse, Stethoscope, ScanLine, UserPlus, PenTool, ArrowRight, ArrowDown, 
@@ -825,7 +824,7 @@
                         </div>
                         )}
 
-                        {/* --- CONTENT: PREPARATION GUIDE (FIXED) --- */}
+                        {/* --- CONTENT: PREPARATION GUIDE --- */}
                         {activeTab === 'prep' && (
                         <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="text-center mb-8 pt-4">
@@ -960,14 +959,14 @@
                         </div>
                         )}
 
-                        {/* --- CONTENT: CRITERIA --- */}
+                        {/* --- CONTENT: CRITERIA (UPDATED LOGIC) --- */}
                         {activeTab === 'criteria' && (
                         <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
                             <div className="bg-purple-50 border border-purple-200 rounded-xl p-6 mb-8 mt-4 text-center">
                                 <h2 className="text-2xl font-bold text-purple-800 flex justify-center items-center gap-2">
                                 <FileSearch /> เกณฑ์การแปลผลทางการแพทย์
                                 </h2>
-                                <p className="text-purple-700 font-medium">มาตรฐานสำหรับแพทย์ในการวินิจฉัยความพร้อม</p>
+                                <p className="text-purple-700 font-medium">มาตรฐานสำหรับแพทย์ในการวินิจฉัยความพร้อม ({planType === 'full' ? 'มี Step Test' : 'ไม่มี Step Test'})</p>
                             </div>
 
                             <div className="space-y-8">
@@ -1075,7 +1074,7 @@
                                 </div>
                             </div>
 
-                            {/* 3. VO2 Max Criteria */}
+                            {/* 3. VO2 Max Criteria (ONLY SHOW IN FULL PLAN) */}
                             {planType === 'full' && (
                                 <div className="bg-white rounded-xl shadow-md border-t-4 border-blue-500 overflow-hidden">
                                     <div className="p-6">
@@ -1133,7 +1132,7 @@
                                 </div>
                             )}
 
-                            {/* 4. Final Decision Matrix */}
+                            {/* 4. Final Decision Matrix (UPDATED: Strictly separates Chester logic) */}
                             <div className="bg-white rounded-xl shadow-md border-t-4 border-green-600 overflow-hidden">
                                 <div className="p-6">
                                     <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
@@ -1148,9 +1147,9 @@
                                         </div>
                                         <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
                                             <li>ความดันโลหิตปกติ หรือสูงเล็กน้อย (ควบคุมได้)</li>
-                                            {planType === 'full' && <li>VO2 Max ระดับ <strong>ปานกลางขึ้นไป</strong></li>}
-                                            <li>ไม่มีโรคประจำตัวที่เป็นความเสี่ยง</li>
                                             <li>BMI อยู่ในเกณฑ์ปกติ-ท้วม (ไม่ถึงอ้วนมาก)</li>
+                                            {planType === 'full' && <li><strong>VO2 Max (Step Test):</strong> อยู่ในเกณฑ์ <strong>Average ขึ้นไป</strong></li>}
+                                            <li>ไม่มีโรคประจำตัวที่เป็นความเสี่ยง</li>
                                         </ul>
                                         </div>
 
@@ -1161,9 +1160,9 @@
                                             <h4 className="font-bold text-yellow-800">กลุ่มสนับสนุน (Support)</h4>
                                         </div>
                                         <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
-                                            {planType === 'full' && <li>VO2 Max ระดับ <strong>ต่ำ (Poor)</strong> หรือไม่ได้ทดสอบ</li>}
                                             <li>ความดันโลหิตสูงเล็กน้อย (แต่ไม่มีอาการ)</li>
-                                            <li>มีโรคประจำตัวแต่ควบคุมได้</li>
+                                            <li>BMI เกินเกณฑ์ (อ้วน/Obesity)</li>
+                                            {planType === 'full' && <li><strong>VO2 Max (Step Test):</strong> ต่ำ <strong>(Poor / Very Poor)</strong> หรือไม่ได้ทดสอบ</li>}
                                             <li>อายุมาก หรือสภาพร่างกายไม่พร้อมลุยไฟ</li>
                                         </ul>
                                         </div>
@@ -1176,7 +1175,6 @@
                                         </div>
                                         <ul className="text-sm text-gray-700 space-y-1 list-disc list-inside">
                                             <li>ความดันโลหิต ≥ 160/100 mmHg</li>
-                                            <li><strong>ภาวะอ้วน (Obesity) / BMI เกินเกณฑ์</strong></li>
                                             <li>มีอาการเจ็บหน้าอก/หอบเหนื่อยรุนแรง</li>
                                             <li>โรคหัวใจ/หอบหืดกำเริบ</li>
                                             <li>สภาพร่างกายเสี่ยงอันตรายต่อตนเอง</li>
